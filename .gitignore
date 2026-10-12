@@ -8,3 +8,6 @@ data-sample/
 .impeccable/review/
 .impeccable/mocks/
 .impeccable/build/
+
+# 최신 설치 파일 모음 (빌드 산출물 — git 제외)
+output/

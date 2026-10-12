@@ -10,8 +10,9 @@
     "dev": "vite",
     "build": "vite build",
     "start": "vite build && electron .",
-    "dist": "vite build && electron-builder --win --x64",
-    "release": "vite build && electron-builder --win --x64 --publish always"
+    "dist": "vite build && electron-builder --win --x64 && node scripts/collect-output.cjs",
+    "release": "vite build && electron-builder --win --x64 --publish always && node scripts/collect-output.cjs",
+    "output": "node scripts/collect-output.cjs"
   },
   "build": {
     "appId": "com.nailentice.settlement",
