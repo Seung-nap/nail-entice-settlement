@@ -67,6 +67,11 @@ function Shell() {
   const unassignedCards = built ? built.visits.filter((v) => v.pay.card > 0 && !data.cardAssign[v.key]).length : 0;
 
   return (
+    <>
+    <div className="ambient" aria-hidden>
+      <div className="orb o1" /><div className="orb o2" /><div className="orb o3" /><div className="orb o4" />
+      <div className="sphere s1" /><div className="sphere peach s2" /><div className="sphere cream s3" /><div className="sphere peach s4" />
+    </div>
     <div className="shell">
       <div className="titlebar" />
       <aside className="sidebar">
@@ -180,6 +185,7 @@ function Shell() {
       </AnimatePresence>
       <Toasts />
     </div>
+    </>
   );
 }
 

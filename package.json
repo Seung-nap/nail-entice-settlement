@@ -1,7 +1,7 @@
 {
   "name": "nail-entice-settlement",
   "productName": "Nail Entice 정산",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "네일엔티스 월말정산 프로그램",
   "author": "Nail Entice",
   "private": true,

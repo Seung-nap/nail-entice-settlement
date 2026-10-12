@@ -40,11 +40,11 @@ ipcMain.handle('file:save', async (e, name, data, kind) => {
 function createWindow() {
   const win = new BrowserWindow({
     width: 1440, height: 920, minWidth: 1100, minHeight: 700,
-    backgroundColor: '#FBF5E9',
+    backgroundColor: '#F6EEE3',
     title: 'Nail Entice 정산',
     icon: path.join(__dirname, '..', 'dist', 'brand.png'),
     titleBarStyle: 'hidden',
-    titleBarOverlay: { color: '#FBF5E9', symbolColor: '#4A2E1F', height: 40 },
+    titleBarOverlay: { color: '#00000000', symbolColor: '#4A2E1F', height: 40 },
     show: false,
     webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, spellcheck: false, backgroundThrottling: !process.env.NE_SMOKE_SHOT },
   });
