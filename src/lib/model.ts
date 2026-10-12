@@ -102,24 +102,24 @@ export const UNASSIGNED = '미지정';
 export interface Group { name: string; icon: string; tone: string; items: string[]; hint: string; }
 
 export const EXPENSE_GROUPS: Group[] = [
-  { name: '임대·관리', icon: 'home', tone: '#D9878F', hint: '매달 나가는 공간 비용', items: ['월세', '관리비', '주차비(월정)', '보증금 이자'] },
-  { name: '공과금', icon: 'bolt', tone: '#E3A86B', hint: '전기·수도·가스·통신', items: ['전기세', '수도세', '가스비', '인터넷·통신비', '휴대폰 요금'] },
-  { name: '재료비', icon: 'polish', tone: '#C9788A', hint: '젤·파츠 등 시술 재료', items: ['젤·컬러', '파츠·스톤·글리터', '팁·연장재료', '베이스·탑·프라이머', '파일·버퍼·솜', '리무버·소모품'] },
-  { name: '위생·소모품', icon: 'sparkle', tone: '#9DB59A', hint: '소독·위생·청소', items: ['소독·살균용품', '장갑·마스크', '타월·세탁', '청소용품', '휴지·물티슈'] },
-  { name: '장비·유지보수', icon: 'tool', tone: '#8C7B6B', hint: '장비 구입과 수리', items: ['램프·드릴 구입', '장비 수리', '집진기·필터', '인테리어 보수', '가구·집기'] },
-  { name: '구독·프로그램', icon: 'app', tone: '#8E9CC4', hint: '매달 결제되는 서비스', items: ['예약·POS 프로그램', '디자인·편집 앱', '매장 음악', '클라우드·저장공간', '카드단말기·VAN'] },
-  { name: '마케팅·광고', icon: 'megaphone', tone: '#E28C6E', hint: '손님을 데려오는 비용', items: ['인스타 광고', '네이버 플레이스 광고', '체험단·협찬', '명함·쿠폰 인쇄', '촬영 소품'] },
-  { name: '고객 서비스', icon: 'gift', tone: '#D7A0B7', hint: '손님을 위한 작은 것들', items: ['음료·다과', '포장·사은품', '이벤트 경품', '리뷰 이벤트'] },
-  { name: '식비·복리후생', icon: 'cup', tone: '#C29D6B', hint: '나를 위한 식비·간식', items: ['식비', '커피·간식', '직원 식대'] },
-  { name: '인건비', icon: 'people', tone: '#A88BB5', hint: '직원·파트타이머', items: ['급여', '4대보험', '퇴직금 적립', '외주 인력'] },
-  { name: '세금·보험·금융', icon: 'receipt', tone: '#7A8C99', hint: '세금·보험·이자', items: ['부가가치세', '종합소득세', '세무 기장료', '화재·배상보험', '대출 이자', '은행 수수료'] },
-  { name: '교육·자기계발', icon: 'book', tone: '#B58F6A', hint: '실력을 키우는 투자', items: ['세미나·교육비', '자격증·공모전', '도서·자료', '샘플·연습재료'] },
-  { name: '교통·물류', icon: 'truck', tone: '#9AA58C', hint: '택배와 이동', items: ['택배·배송비', '교통비', '주유비', '주차비'] },
-  { name: '기타 지출', icon: 'dots', tone: '#A99A90', hint: '분류하기 애매한 것', items: ['경조사비', '기타'] },
+  { name: '임대·관리', icon: 'home', tone: '#8C6E58', hint: '매달 나가는 공간 비용', items: ['월세', '관리비', '주차비(월정)', '보증금 이자'] },
+  { name: '공과금', icon: 'bolt', tone: '#8C6E58', hint: '전기·수도·가스·통신', items: ['전기세', '수도세', '가스비', '인터넷·통신비', '휴대폰 요금'] },
+  { name: '재료비', icon: 'polish', tone: '#8C6E58', hint: '젤·파츠 등 시술 재료', items: ['젤·컬러', '파츠·스톤·글리터', '팁·연장재료', '베이스·탑·프라이머', '파일·버퍼·솜', '리무버·소모품'] },
+  { name: '위생·소모품', icon: 'sparkle', tone: '#8C6E58', hint: '소독·위생·청소', items: ['소독·살균용품', '장갑·마스크', '타월·세탁', '청소용품', '휴지·물티슈'] },
+  { name: '장비·유지보수', icon: 'tool', tone: '#8C6E58', hint: '장비 구입과 수리', items: ['램프·드릴 구입', '장비 수리', '집진기·필터', '인테리어 보수', '가구·집기'] },
+  { name: '구독·프로그램', icon: 'app', tone: '#8C6E58', hint: '매달 결제되는 서비스', items: ['예약·POS 프로그램', '디자인·편집 앱', '매장 음악', '클라우드·저장공간', '카드단말기·VAN'] },
+  { name: '마케팅·광고', icon: 'megaphone', tone: '#8C6E58', hint: '손님을 데려오는 비용', items: ['인스타 광고', '네이버 플레이스 광고', '체험단·협찬', '명함·쿠폰 인쇄', '촬영 소품'] },
+  { name: '고객 서비스', icon: 'gift', tone: '#8C6E58', hint: '손님을 위한 작은 것들', items: ['음료·다과', '포장·사은품', '이벤트 경품', '리뷰 이벤트'] },
+  { name: '식비·복리후생', icon: 'cup', tone: '#8C6E58', hint: '나를 위한 식비·간식', items: ['식비', '커피·간식', '직원 식대'] },
+  { name: '인건비', icon: 'people', tone: '#8C6E58', hint: '직원·파트타이머', items: ['급여', '4대보험', '퇴직금 적립', '외주 인력'] },
+  { name: '세금·보험·금융', icon: 'receipt', tone: '#8C6E58', hint: '세금·보험·이자', items: ['부가가치세', '종합소득세', '세무 기장료', '화재·배상보험', '대출 이자', '은행 수수료'] },
+  { name: '교육·자기계발', icon: 'book', tone: '#8C6E58', hint: '실력을 키우는 투자', items: ['세미나·교육비', '자격증·공모전', '도서·자료', '샘플·연습재료'] },
+  { name: '교통·물류', icon: 'truck', tone: '#8C6E58', hint: '택배와 이동', items: ['택배·배송비', '교통비', '주유비', '주차비'] },
+  { name: '기타 지출', icon: 'dots', tone: '#8C6E58', hint: '분류하기 애매한 것', items: ['경조사비', '기타'] },
 ];
 
 export const INCOME_GROUPS: Group[] = [
-  { name: '기타 수입', icon: 'coin', tone: '#7FA37A', hint: '시술 외 들어온 돈', items: ['제품 판매', '정부 지원금', '세금·수수료 환급', '이자 수익', '기타 수입'] },
+  { name: '기타 수입', icon: 'coin', tone: '#8C6E58', hint: '시술 외 들어온 돈', items: ['제품 판매', '정부 지원금', '세금·수수료 환급', '이자 수익', '기타 수입'] },
 ];
 
 export const ENTRY_METHODS = ['카드', '현금', '계좌이체', '자동이체', '간편결제'];

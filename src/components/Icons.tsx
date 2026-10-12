@@ -69,7 +69,7 @@ export function Icon({ name, size = 20, className, style, stroke = 1.7 }: P & { 
 }
 
 /** 하트 — 인스타 하이라이트 아래의 작은 하트 모티프 */
-export function Heart({ size = 10, color = '#C77B83' }: { size?: number; color?: string }) {
+export function Heart({ size = 10, color = '#6B4A36' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
       <path d="M12 21s-8.5-5.2-8.5-11.3A4.7 4.7 0 0 1 12 7a4.7 4.7 0 0 1 8.5 2.7C20.5 15.8 12 21 12 21z" fill={color} />

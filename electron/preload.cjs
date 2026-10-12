@@ -8,4 +8,11 @@ contextBridge.exposeInMainWorld('api', {
   saveFile: (name, data, kind) => ipcRenderer.invoke('file:save', name, data, kind),
   openDataFolder: () => ipcRenderer.invoke('data:openFolder'),
   platform: process.platform,
+  version: () => ipcRenderer.invoke('app:version'),
+  update: {
+    get: () => ipcRenderer.invoke('update:get'),
+    check: () => ipcRenderer.invoke('update:check'),
+    install: () => ipcRenderer.invoke('update:install'),
+    onState: (cb) => { const h = (_e, st) => cb(st); ipcRenderer.on('update:state', h); return () => ipcRenderer.removeListener('update:state', h); },
+  },
 });

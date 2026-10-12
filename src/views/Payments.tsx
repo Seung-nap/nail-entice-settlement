@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { useApp } from '../store';
 import { Icon } from '../components/Icons';
-import { CountUp, Stagger } from '../components/ui';
-import { useMonthVisits, PAY_META, PAY_KEYS } from './common';
+import { CountUp, Stagger, Strip } from '../components/ui';
+import { useMonthVisits, PAY_KEYS, DONUT_COLORS } from './common';
 import { UNASSIGNED } from '../lib/model';
 import { wonShort, pct } from '../lib/data';
 
@@ -33,31 +33,29 @@ export default function Payments() {
 
   return (
     <div className="grid g-12">
-      <Stagger i={0} className="span-12">
-        <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 12 }}>
-          {PAY_KEYS.filter((k) => sv(`pay_${k}`) > 0 || ['cash', 'card', 'transfer', 'naver'].includes(k)).map((k) => {
-            const amt = sv(`pay_${k}`), meta = PAY_META[k];
-            const fee = k === 'card' ? sv('cardFee') : Math.round(amt * st.payRates[k]);
-            return (
-              <div key={k} className="card hover" style={{ padding: 18 }}>
-                <div className="kpi-label"><span className="chip-ic" style={{ width: 28, height: 28, borderRadius: 9, background: meta.bg, color: meta.color }}><Icon name={meta.icon} size={16} /></span>{st.payLabels[k]}<span className="muted" style={{ marginLeft: 'auto', fontSize: 12 }}>{pct(amt / (paid || 1), 0)}</span></div>
-                <div className="kpi-value" style={{ fontSize: 23 }}><CountUp value={amt} /><span className="unit">원</span></div>
-                <div className="bar-track" style={{ marginTop: 12, height: 6 }}><div className="bar-fill" style={{ transform: `scaleX(${amt / (paid || 1)})`, background: meta.color, transition: 'transform .8s cubic-bezier(.22,1,.36,1)' }} /></div>
-                <div className="kpi-foot">수수료 <b className="num" style={{ color: fee ? '#B9636C' : undefined }}>{fee.toLocaleString()}원</b>{k !== 'card' && <span>({pct(st.payRates[k], 2)})</span>}</div>
-              </div>
-            );
-          })}
-        </div>
-      </Stagger>
+      <div className="span-12">
+        <Strip items={PAY_KEYS.filter((k) => sv(`pay_${k}`) > 0 || ['cash', 'card', 'transfer', 'naver'].includes(k)).map((k) => {
+          const amt = sv(`pay_${k}`);
+          const fee = k === 'card' ? sv('cardFee') : Math.round(amt * st.payRates[k]);
+          return {
+            l: <span className="flex" style={{ justifyContent: 'space-between' }}><span>{st.payLabels[k]}</span><span className="num">{pct(amt / (paid || 1), 0)}</span></span>,
+            v: <><CountUp value={amt} /><small>원</small></>,
+            sub: <>
+              <div className="bar-track" style={{ margin: '2px 0 10px' }}><div className="bar-fill" style={{ transform: `scaleX(${amt / (paid || 1)})`, background: DONUT_COLORS[k], transition: 'transform .8s cubic-bezier(.16,1,.3,1)' }} /></div>
+              수수료 <b className="num">{fee.toLocaleString()}원</b>{k !== 'card' && <> ({pct(st.payRates[k], 2)})</>}
+            </>,
+          };
+        })} />
+      </div>
       <Stagger i={1} className="span-8">
         <div className="card">
-          <div className="card-h"><span className="chip-ic" style={{ background: '#F8E4E2', color: '#B9636C' }}><Icon name="card" size={17} /></span><div><div className="card-t">카드사별 수수료</div><div className="card-d">방문 내역에서 카드사를 지정하면 그 카드사 요율로 계산돼요</div></div>
+          <div className="card-h"><div><div className="card-t">카드사별 수수료</div><div className="card-d">방문 내역에서 카드사를 지정하면 그 카드사 요율로 계산돼요</div></div>
             <div className="right"><span className="card-d">카드 수수료 합계 <b className="num" style={{ color: '#4A2E1F' }}>{sv('cardFee').toLocaleString()}원</b></span></div></div>
           <table className="tbl">
             <thead><tr><th>카드사</th><th className="r">수수료율</th><th className="r">건수</th><th className="r">카드 결제액</th><th className="r">수수료</th><th style={{ width: 40 }} /></tr></thead>
             <tbody>
               <tr>
-                <td><b>카드사 미지정</b><div className="muted" style={{ fontSize: 11.5 }}>카드 기본율 적용</div></td>
+                <td><b>카드사 미지정</b><div className="muted" style={{ fontSize: 13 }}>카드 기본율 적용</div></td>
                 <td className="r"><RateInput value={st.payRates.card} onCommit={(v) => update((d) => { d.settings.payRates.card = v; }, '카드 기본 수수료율을 바꿨어요')} /></td>
                 <td className="r num">{unassigned?.n ?? 0}</td><td className="r num">{(unassigned?.amt ?? 0).toLocaleString()}</td><td className="r num b">{(unassigned?.fee ?? 0).toLocaleString()}</td><td />
               </tr>
@@ -80,7 +78,7 @@ export default function Payments() {
       </Stagger>
       <Stagger i={2} className="span-4">
         <div className="card" style={{ height: '100%' }}>
-          <div className="card-h"><span className="chip-ic" style={{ background: '#E1F3E6', color: '#2E9E55' }}><Icon name="info" size={17} /></span><div><div className="card-t">수수료율 기준</div><div className="card-d">가게 상황에 맞게 바꿔주세요</div></div></div>
+          <div className="card-h"><div><div className="card-t">수수료율 기준</div><div className="card-d">가게 상황에 맞게 바꿔주세요</div></div></div>
           <table className="tbl" style={{ marginBottom: 12 }}>
             <tbody>
               {PAY_KEYS.filter((k) => k !== 'card' && k !== 'unpaid').map((k) => (

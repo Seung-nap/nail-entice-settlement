@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useApp } from '../store';
 import { Icon } from '../components/Icons';
-import { CountUp, Empty, Seg, Stagger, Switch, spring } from '../components/ui';
+import { CountUp, Empty, Seg, Stagger, Strip, Switch, spring } from '../components/ui';
 import { EXPENSE_GROUPS, INCOME_GROUPS, ENTRY_METHODS, Entry, EntryKind, Group } from '../lib/model';
 import { monthKeyOf, todayIso, wonShort, pad } from '../lib/data';
 import { WD, groupMeta } from './common';
@@ -10,22 +10,22 @@ import { WD, groupMeta } from './common';
 const AMT_CHIPS = [10000, 50000, 100000, 500000];
 
 function GroupIcon({ g, size = 38 }: { g: Group; size?: number }) {
-  return <span className="chip-ic" style={{ width: size, height: size, borderRadius: size * .32, background: `${g.tone}1F`, color: g.tone }}><Icon name={g.icon} size={size * .5} /></span>;
+  return <span style={{ width: size, display: 'grid', placeItems: 'center', color: 'var(--ink-60)', flex: 'none' }}><Icon name={g.icon} size={18} /></span>;
 }
 
 function EntryLine({ e, onChange, onDelete }: { e: Entry; onChange: (p: Partial<Entry>) => void; onDelete: () => void }) {
   const d = new Date(e.date + 'T00:00:00');
   return (
     <motion.div layout className="entry-row" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, height: 0, paddingTop: 0, paddingBottom: 0 }} transition={spring}>
-      <span className="dt num">{d.getMonth() + 1}.{pad(d.getDate())} <span style={{ fontWeight: 500 }}>({WD[d.getDay()]})</span></span>
+      <span className="dt num">{d.getMonth() + 1}.{pad(d.getDate())} <span style={{ fontWeight: 400 }}>({WD[d.getDay()]})</span></span>
       <span className="ti" style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
         <b>{e.item}</b>
-        <input className="inp sm" style={{ background: 'transparent', boxShadow: 'none', height: 26, padding: '0 4px', flex: 1, minWidth: 40, color: '#7A5A47', fontWeight: 500 }} defaultValue={e.title} placeholder="내용 추가…"
+        <input className="inp sm" style={{ background: 'transparent', boxShadow: 'none', height: 26, padding: '0 4px', flex: 1, minWidth: 40, color: 'var(--ink-80)', fontWeight: 400 }} defaultValue={e.title} placeholder="내용 추가…"
           onBlur={(ev) => ev.target.value !== e.title && onChange({ title: ev.target.value })} onKeyDown={(ev) => ev.key === 'Enter' && (ev.target as HTMLInputElement).blur()} />
         {e.recurring && <span className="tag reg" title="매월 고정"><Icon name="repeat" size={10} stroke={2.4} /> 고정</span>}
       </span>
-      <span className="muted" style={{ fontSize: 12 }}>{e.method}</span>
-      <input className="inp sm num am" style={{ width: 104, textAlign: 'right', background: 'transparent', boxShadow: 'none', fontWeight: 800 }} defaultValue={e.amount.toLocaleString()}
+      <span className="muted" style={{ fontSize: 13 }}>{e.method}</span>
+      <input className="inp sm num am" style={{ width: 104, textAlign: 'right', background: 'transparent', boxShadow: 'none', fontWeight: 700 }} defaultValue={e.amount.toLocaleString()}
         onFocus={(ev) => (ev.target.value = String(e.amount))}
         onBlur={(ev) => { const n = Number(ev.target.value.replace(/[,\s원]/g, '')); if (Number.isFinite(n) && n !== e.amount) onChange({ amount: n }); else ev.target.value = e.amount.toLocaleString(); }}
         onKeyDown={(ev) => ev.key === 'Enter' && (ev.target as HTMLInputElement).blur()} />
@@ -108,7 +108,7 @@ export default function Expenses() {
           <div className="tg-head" onClick={() => setOpen((o) => ({ ...o, [gr.name]: !o[gr.name] }))}>
             <GroupIcon g={gr} />
             <div><div className="ttl">{gr.name}</div><div className="hint">{gr.hint}</div></div>
-            <div className="sum">{sum ? <><b className="num" style={{ color: k === '수입' ? '#4F7A4A' : undefined }}>{k === '수입' ? '+' : ''}{sum.toLocaleString()}원</b><span>{es.length}건</span></> : <span>아직 없음</span>}</div>
+            <div className="sum">{sum ? <><b className="num" style={{ color: k === '수입' ? '#2D6A45' : undefined }}>{k === '수입' ? '+' : ''}{sum.toLocaleString()}원</b><span>{es.length}건</span></> : <span>아직 없음</span>}</div>
             <Icon name="chevron" size={18} className="chev" />
           </div>
           <AnimatePresence initial={false}>
@@ -133,24 +133,18 @@ export default function Expenses() {
 
   return (
     <div>
-      <div className="grid g-12" style={{ marginBottom: 16 }}>
-        {[
-          { l: `${m % 100}월 지출`, v: expTotal, ic: 'wallet', t: '#D9878F' },
-          { l: '고정비 (매월)', v: fixedTotal, ic: 'repeat', t: '#8E9CC4' },
-          { l: '기타 수입', v: incTotal, ic: 'coin', t: '#7FA37A' },
-        ].map((x, i) => (
-          <Stagger key={x.l} i={i} className="span-3"><div className="card hover"><div className="kpi-label"><span className="chip-ic" style={{ width: 26, height: 26, borderRadius: 8, background: `${x.t}22`, color: x.t }}><Icon name={x.ic} size={15} /></span>{x.l}</div><div className="kpi-value" style={{ fontSize: 24 }}><CountUp value={x.v} /><span className="unit">원</span></div></div></Stagger>
-        ))}
-        <Stagger i={3} className="span-3">
-          <div className="card hover" style={{ background: recurringTemplates.length ? 'linear-gradient(135deg,#FFF8EE,#F8E4E2)' : undefined }}>
-            <div className="kpi-label"><span className="chip-ic" style={{ width: 26, height: 26, borderRadius: 8, background: '#EDBE9533', color: '#A86E3D' }}><Icon name="copy" size={15} /></span>고정비 불러오기</div>
-            {recurringTemplates.length ? (
-              <><div style={{ fontSize: 12.5, color: '#7A5A47', margin: '8px 0 10px' }}>지난달 고정비 {recurringTemplates.length}건 · {wonShort(recurringTemplates.reduce((a, e) => a + e.amount, 0))}원</div>
-                <button className="btn sm rose" onClick={loadRecurring}><Icon name="repeat" size={14} />{m % 100}월로 복사</button></>
-            ) : <div className="note" style={{ marginTop: 8 }}>‘매월 고정’으로 기록한 지출은 다음 달에 한 번에 불러올 수 있어요.</div>}
-          </div>
-        </Stagger>
-      </div>
+      <Strip items={[
+        { l: `${m % 100}월 지출`, v: <><CountUp value={expTotal} /><small>원</small></> },
+        { l: '그중 고정비', v: <><CountUp value={fixedTotal} /><small>원</small></> },
+        { l: '기타 수입', v: <><CountUp value={incTotal} /><small>원</small></> },
+        {
+          l: '고정비 불러오기',
+          v: recurringTemplates.length ? <>{recurringTemplates.length}<small>건 · {wonShort(recurringTemplates.reduce((x, e) => x + e.amount, 0))}원</small></> : <small style={{ marginLeft: 0 }}>없음</small>,
+          sub: recurringTemplates.length
+            ? <button className="btn sm primary" onClick={loadRecurring}><Icon name="repeat" size={14} />{m % 100}월로 복사</button>
+            : '‘매월 고정’으로 기록하면 다음 달에 한 번에 불러와요',
+        },
+      ]} />
 
       <div className="exp-layout">
         <div>
@@ -175,7 +169,7 @@ export default function Expenses() {
               <div className="field"><label>금액</label>
                 <div style={{ position: 'relative' }}>
                   <input ref={amtRef} className="inp amount-inp num" inputMode="numeric" value={amount ? Number(amount.replace(/\D/g, '')).toLocaleString() : ''} onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))} placeholder="0" style={{ paddingRight: 34 }} />
-                  <span style={{ position: 'absolute', right: 13, top: 12, fontWeight: 800, color: '#A88C78' }}>원</span>
+                  <span style={{ position: 'absolute', right: 13, top: 12, fontWeight: 700, color: 'var(--ink-60)' }}>원</span>
                 </div></div>
               <div className="field"><label>결제수단</label>
                 <select className="inp" value={method} onChange={(e) => setMethod(e.target.value)} style={{ width: 120 }}>{ENTRY_METHODS.map((x) => <option key={x}>{x}</option>)}</select></div>
@@ -198,7 +192,7 @@ export default function Expenses() {
 
         <div style={{ position: 'sticky', top: 0 }}>
           <div className="card">
-            <div className="card-h"><span className="chip-ic" style={{ background: '#F6EDDC', color: '#7A5A47' }}><Icon name="calendar" size={17} /></span><div><div className="card-t">날짜별 정리</div><div className="card-d">{m % 100}월 · {monthEntries.length}건</div></div></div>
+            <div className="card-h"><div><div className="card-t">날짜별 정리</div><div className="card-d">{m % 100}월 · {monthEntries.length}건</div></div></div>
             {byDate.length ? (
               <div className="timeline" style={{ maxHeight: 'calc(100vh - 330px)', overflow: 'auto', margin: '0 -6px', padding: '0 6px' }}>
                 {byDate.map(([dt, es]) => {
@@ -207,7 +201,7 @@ export default function Expenses() {
                     <div className="tl-day" key={dt}>
                       <div className="tl-d"><span>{d.getMonth() + 1}월 {d.getDate()}일 {WD[d.getDay()]}요일</span><span className="num">{es.reduce((a, e) => a + (e.kind === '수입' ? e.amount : -e.amount), 0).toLocaleString()}</span></div>
                       {es.map((e) => (
-                        <div className="tl-item" key={e.id}><span className="dotc" style={{ background: groupMeta(e.group).tone }} /><span><b style={{ fontWeight: 650 }}>{e.item}</b>{e.title && <span className="muted"> · {e.title}</span>}</span><span className="am num" style={{ color: e.kind === '수입' ? '#4F7A4A' : undefined }}>{e.kind === '수입' ? '+' : '−'}{e.amount.toLocaleString()}</span></div>
+                        <div className="tl-item" key={e.id}><span className="dotc"  /><span><b style={{ fontWeight: 600 }}>{e.item}</b>{e.title && <span className="muted"> · {e.title}</span>}</span><span className="am num" style={{ color: e.kind === '수입' ? '#2D6A45' : undefined }}>{e.kind === '수입' ? '+' : '−'}{e.amount.toLocaleString()}</span></div>
                       ))}
                     </div>
                   );
@@ -215,7 +209,7 @@ export default function Expenses() {
               </div>
             ) : <Empty icon="wallet" title={`${m % 100}월 기록이 없어요`}>왼쪽에서 첫 지출을 기입해보세요</Empty>}
             <div className="hr" />
-            <div className="flex" style={{ justifyContent: 'space-between', fontSize: 13.5 }}><span className="muted">수입 − 지출</span><b className="num" style={{ color: incTotal - expTotal < 0 ? '#C8575F' : '#4F7A4A' }}>{(incTotal - expTotal).toLocaleString()}원</b></div>
+            <div className="flex" style={{ justifyContent: 'space-between', fontSize: 14 }}><span className="muted">수입 − 지출</span><b className="num" style={{ color: incTotal - expTotal < 0 ? 'var(--neg)' : incTotal - expTotal > 0 ? 'var(--pos)' : 'var(--ink)' }}>{(incTotal - expTotal).toLocaleString()}원</b></div>
             <div className="note" style={{ marginTop: 10 }}>기입한 내용은 스프레드시트의 <b>수입지출</b> 시트와 <b>월말정산</b>에 즉시 반영돼요.</div>
           </div>
         </div>

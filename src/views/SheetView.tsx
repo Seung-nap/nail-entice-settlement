@@ -181,8 +181,8 @@ export default function SheetView() {
     const cls = ['ss-c', f.num ? 'r' : '', f.neg && cd?.f === 'won' ? 'neg' : '', f.err ? 'err' : '', cd?.s ? `s-${cd.s}` : '', isEd && !cd?.s ? 'edit' : '', ovf ? 'ovf' : ''].join(' ');
     const sty: React.CSSProperties = { width: widths[c] };
     if (c < fc) { sty.position = 'sticky'; sty.left = RW + xs[c]; sty.zIndex = 2; }
-    if (inRange(r, c) && !(isAct && range.r1 === range.r2 && range.c1 === range.c2)) sty.boxShadow = 'inset 0 0 0 999px rgba(217,135,143,.13)';
-    if (isAct) { sty.boxShadow = 'inset 0 0 0 2px #D9878F'; sty.position = sty.position ?? 'relative'; sty.zIndex = 3; sty.overflow = 'visible'; }
+    if (inRange(r, c) && !(isAct && range.r1 === range.r2 && range.c1 === range.c2)) sty.boxShadow = 'inset 0 0 0 999px rgba(74,46,31,.08)';
+    if (isAct) { sty.boxShadow = 'inset 0 0 0 2px #6B4A36'; sty.position = sty.position ?? 'relative'; sty.zIndex = 3; sty.overflow = 'visible'; }
     return (
       <div key={c} className={cls} style={sty}
         onMouseDown={(e) => { if (editing != null && !isAct) commit(sinkRef.current?.value ?? ''); dragging.current = true; e.shiftKey ? setAct({ r, c }) : (setAct({ r, c }), setAnc({ r, c })); if (!isAct) setMsg(''); }}
@@ -259,10 +259,10 @@ export default function SheetView() {
           <button key={s.name} className={`ss-tab ${i === idx ? 'on' : ''}`} onClick={() => setIdx(i)}>
             {i === idx && <motion.div layoutId="ss-tab" className="tb" transition={spring} />}
             <Icon name={s.icon} size={14} /><span>{s.name}</span>
-            <span className="dot" style={{ background: s.bind.type === 'none' ? '#D9878F' : '#E8C27A' }} title={s.bind.type === 'none' ? '자동 계산' : '입력 가능'} />
+            <span className="dot" style={{ background: s.bind.type === 'none' ? '#6B4A36' : '#C9AE8F' }} title={s.bind.type === 'none' ? '자동 계산' : '입력 가능'} />
           </button>
         ))}
-        <span className="note" style={{ marginLeft: 'auto', whiteSpace: 'nowrap', paddingRight: 6 }}><span style={{ color: '#D9878F' }}>●</span> 자동 계산 &nbsp;<span style={{ color: '#E8C27A' }}>●</span> 입력 가능</span>
+        <span className="note" style={{ marginLeft: 'auto', whiteSpace: 'nowrap', paddingRight: 6 }}><span className="dot" style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#6B4A36', marginRight: 5 }} />자동 계산 &nbsp;&nbsp;<span className="dot" style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#C9AE8F', marginRight: 5 }} />입력 가능</span>
       </div>
     </div>
   );

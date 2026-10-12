@@ -201,43 +201,67 @@ export function buildWorkbook(data: AppData): Built {
   const rRet = add('returning', '재방문 고객', (c) => `=${A(c, rCust)}-${A(c, rNew)}`, { f: 'int', total: null });
   add('services', '시술 건수', (c) => `=COUNTIF(${LR(L.month)},${mk(c)})`, { f: 'int' });
 
-  add(null, '매출', null, { s: 'section' });
-  const rList = add('list', '정가 매출', vSum(V.list));
-  add('discount', '할인', vSum(V.disc));
-  add('point', '포인트 사용', vSum(V.point));
-  const rPaid = add('paid', '실결제 매출', vSum(V.paid), { s: 'strong' });
+  // ── 손익계산서 (한국 표준 순서) ──────────────────────────────
+  // Ⅰ 매출액 − Ⅱ 매출원가 = Ⅲ 매출총이익 − Ⅳ 판매비와관리비 = Ⅴ 영업이익
+  // + Ⅵ 영업외수익 − Ⅶ 영업외비용 = Ⅷ 소득세 차감 전 이익 − Ⅸ 소득세 = Ⅹ 당기순이익
+  const eSum = (c: number, extra: string) => `SUMIFS(${ER(5)},${extra},${ER(0)},${dFrom(c)},${ER(0)},${dTo(c)})`;
+  const ex = (c: number, extra: string) => eSum(c, `${ER(1)},"지출",${extra}`);
+  const inc = (c: number, extra: string) => eSum(c, `${ER(1)},"수입",${extra}`);
+
+  add(null, 'Ⅰ. 매출액', null, { s: 'section' });
+  const rList = add('list', '시술 매출 (정가)', vSum(V.list));
+  add('discount', '(−) 할인', vSum(V.disc));
+  add('point', '(−) 포인트 사용', vSum(V.point));
+  const rPaid = add('paid', '시술 순매출 (실결제)', vSum(V.paid), { s: 'strong' });
+  const rOtherSales = add('otherSales', '상품 매출 (제품 판매)', (c) => `=${inc(c, `${ER(3)},"제품 판매"`)}`);
+  const rRevenue = add('revenue', '매출액 합계', (c) => `=${A(c, rPaid)}+${A(c, rOtherSales)}`, { s: 'strong' });
   add('avg', '객단가 (실결제÷방문)', (c) => `=IFERROR(${A(c, rPaid)}/${A(c, rVisits)},0)`, { total: () => `=IFERROR(${A(totC, rPaid)}/${A(totC, rVisits)},0)` });
   add('discountRate', '할인율', (c) => `=IFERROR(1-${A(c, rPaid)}/${A(c, rList)},0)`, { f: 'pct', total: () => `=IFERROR(1-${A(totC, rPaid)}/${A(totC, rList)},0)` });
 
-  add(null, '결제수단별', null, { s: 'section' });
-  const payRows: Record<string, number> = {};
-  PAY_KEYS.forEach((k) => { payRows[k] = add(`pay_${k}`, label(k), vSum(payCol(k))); });
+  add(null, 'Ⅱ. 매출원가', null, { s: 'section' });
+  const expenseRows: Record<string, number> = {};
+  const rCogs = add('cogs', '재료비', (c) => `=${ex(c, `${ER(2)},"재료비"`)}`);
+  expenseRows['재료비'] = rCogs; summaryRow['exp_재료비'] = rCogs;
+  const rGross = add('grossProfit', 'Ⅲ. 매출총이익', (c) => `=${A(c, rRevenue)}-${A(c, rCogs)}`, { s: 'strong' });
+  add('grossMargin', '매출총이익률', (c) => `=IFERROR(${A(c, rGross)}/${A(c, rRevenue)},0)`, { f: 'pct', total: () => `=IFERROR(${A(totC, rGross)}/${A(totC, rRevenue)},0)` });
 
-  add(null, '결제 수수료', null, { s: 'section' });
+  add(null, 'Ⅳ. 판매비와관리비', null, { s: 'section' });
+  const sgaStart = mRows.length;
   add('cardFee', '카드 수수료', vSum(V.cardFee));
   add('easyFee', '간편결제·기타 수수료', vSum(V.easyFee));
-  const rFee = add('fee', '수수료 합계', vSum(V.fee), { s: 'strong' });
-  const rNet = add('netSales', '순매출 (입금액)', (c) => `=${A(c, rPaid)}-${A(c, rFee)}-${A(c, payRows.unpaid)}`, { s: 'strong' });
-
-  add(null, '수입', null, { s: 'section' });
-  const rInc = add('otherIncome', '기타 수입', (c) => `=SUMIFS(${ER(5)},${ER(1)},"수입",${ER(0)},${dFrom(c)},${ER(0)},${dTo(c)})`);
-  const rTotalIn = add('totalIncome', '총 수입', (c) => `=${A(c, rNet)}+${A(c, rInc)}`, { s: 'strong' });
-
-  add(null, '지출', null, { s: 'section' });
-  const expenseRows: Record<string, number> = {};
-  const exStart = mRows.length;
-  EXPENSE_GROUPS.forEach((g) => {
-    expenseRows[g.name] = add(`exp_${g.name}`, g.name, (c, r) => `=SUMIFS(${ER(5)},${ER(1)},"지출",${ER(2)},$A${r + 1},${ER(0)},${dFrom(c)},${ER(0)},${dTo(c)})`);
+  EXPENSE_GROUPS.filter((g) => g.name !== '재료비').forEach((g) => {
+    // 세금·보험·금융 중 대출 이자(영업외비용)·종합소득세(소득세)는 아래로 뺀다
+    const fn = g.name === '세금·보험·금융'
+      ? (c: number, r: number) => `=${ex(c, `${ER(2)},$A${r + 1}`)}-${ex(c, `${ER(2)},$A${r + 1},${ER(3)},"대출 이자"`)}-${ex(c, `${ER(2)},$A${r + 1},${ER(3)},"종합소득세"`)}`
+      : (c: number, r: number) => `=${ex(c, `${ER(2)},$A${r + 1}`)}`;
+    expenseRows[g.name] = add(`exp_${g.name}`, g.name, fn);
   });
-  const exEnd = mRows.length - 1;
-  const rExp = add('expense', '지출 합계', (c) => `=SUM(${A(c, exStart)}:${A(c, exEnd)})`, { s: 'strong' });
+  const sgaEnd = mRows.length - 1;
+  const rSga = add('sga', '판매비와관리비 합계', (c) => `=SUM(${A(c, sgaStart)}:${A(c, sgaEnd)})`, { s: 'strong' });
+  const rOp = add('opProfit', 'Ⅴ. 영업이익', (c) => `=${A(c, rGross)}-${A(c, rSga)}`, { s: 'strong' });
+  add('opMargin', '영업이익률', (c) => `=IFERROR(${A(c, rOp)}/${A(c, rRevenue)},0)`, { f: 'pct', total: () => `=IFERROR(${A(totC, rOp)}/${A(totC, rRevenue)},0)` });
 
-  add(null, '결산', null, { s: 'section' });
-  const rProfit = add('profit', '순수익', (c) => `=${A(c, rTotalIn)}-${A(c, rExp)}`, { s: 'net' });
-  add('margin', '순이익률 (순수익÷실결제)', (c) => `=IFERROR(${A(c, rProfit)}/${A(c, rPaid)},0)`, { f: 'pct', total: () => `=IFERROR(${A(totC, rProfit)}/${A(totC, rPaid)},0)` });
-  add('cumProfit', '누적 순수익', (c) => (c === mc(0) ? `=${A(c, rProfit)}` : `=${A(c - 1, mRows.length)}+${A(c, rProfit)}`), { total: null });
+  add(null, 'Ⅵ·Ⅶ. 영업외 손익', null, { s: 'section' });
+  const rNonopInc = add('nonopInc', '영업외수익 (지원금·환급·이자 등)', (c) => `=${eSum(c, `${ER(1)},"수입"`)}-${A(c, rOtherSales)}`);
+  const rNonopExp = add('nonopExp', '영업외비용 (대출 이자)', (c) => `=${ex(c, `${ER(3)},"대출 이자"`)}`);
+  const rPreTax = add('preTax', 'Ⅷ. 소득세 차감 전 이익', (c) => `=${A(c, rOp)}+${A(c, rNonopInc)}-${A(c, rNonopExp)}`, { s: 'strong' });
+  const rTax = add('incomeTax', 'Ⅸ. 소득세 (종합소득세 납부)', (c) => `=${ex(c, `${ER(3)},"종합소득세"`)}`);
+
+  add(null, 'Ⅹ. 결산', null, { s: 'section' });
+  const rProfit = add('profit', '당기순이익', (c) => `=${A(c, rPreTax)}-${A(c, rTax)}`, { s: 'net' });
+  add('margin', '순이익률 (당기순이익÷매출액)', (c) => `=IFERROR(${A(c, rProfit)}/${A(c, rRevenue)},0)`, { f: 'pct', total: () => `=IFERROR(${A(totC, rProfit)}/${A(totC, rRevenue)},0)` });
+  add('cumProfit', '누적 당기순이익', (c) => (c === mc(0) ? `=${A(c, rProfit)}` : `=${A(c - 1, mRows.length)}+${A(c, rProfit)}`), { total: null });
+
+  add(null, '참고: 현금 흐름 · 결제', null, { s: 'section' });
+  const payRows: Record<string, number> = {};
+  PAY_KEYS.forEach((k) => { payRows[k] = add(`pay_${k}`, label(k), vSum(payCol(k))); });
+  const rFee = add('fee', '결제 수수료 합계', vSum(V.fee));
+  add('netSales', '시술 입금액 (실결제−수수료−미수)', (c) => `=${A(c, rPaid)}-${A(c, rFee)}-${A(c, payRows.unpaid)}`, { s: 'strong' });
+  const rInc = add('otherIncome', '기타 수입 합계 (상품 매출 + 영업외수익)', (c) => `=${A(c, rOtherSales)}+${A(c, rNonopInc)}`);
+  const rExp = add('expense', '지출 합계 (기입한 모든 지출)', (c) => `=SUMIFS(${ER(5)},${ER(1)},"지출",${ER(0)},${dFrom(c)},${ER(0)},${dTo(c)})`);
   add('feeRate', '매출 대비 수수료율', (c) => `=IFERROR(${A(c, rFee)}/${A(c, rPaid)},0)`, { f: 'pct', total: () => `=IFERROR(${A(totC, rFee)}/${A(totC, rPaid)},0)` });
-  add('expRate', '매출 대비 지출률', (c) => `=IFERROR(${A(c, rExp)}/${A(c, rPaid)},0)`, { f: 'pct', total: () => `=IFERROR(${A(totC, rExp)}/${A(totC, rPaid)},0)` });
+  add('expRate', '매출 대비 지출률', (c) => `=IFERROR(${A(c, rExp)}/${A(c, rRevenue)},0)`, { f: 'pct', total: () => `=IFERROR(${A(totC, rExp)}/${A(totC, rRevenue)},0)` });
+  void rInc;
 
   // ───────── 고객별 ─────────
   const custMap = new Map<string, { name: string; key: string; no: number; total: number }>();
@@ -387,7 +411,7 @@ export function buildWorkbook(data: AppData): Built {
 
   const W = (n: number, w = 92) => Array(n).fill(w);
   const sheets: SheetDef[] = [
-    { name: SH.M, icon: 'chart', desc: '월별 매출·수수료·지출·순수익 — 전부 수식', rows: mRows, widths: [190, ...W(nM, 108), 120], freeze: { r: 3, c: 1 }, bind: { type: 'none' } },
+    { name: SH.M, icon: 'chart', desc: '표준 손익계산서: 매출액 → 매출총이익 → 영업이익 → 당기순이익 — 전부 수식', rows: mRows, widths: [190, ...W(nM, 108), 120], freeze: { r: 3, c: 1 }, bind: { type: 'none' } },
     { name: SH.V, icon: 'calendar', desc: '고객 1회 방문 = 1행 · 카드사 지정 가능', rows: vRows, widths: [70, 128, 70, 76, 70, 260, 56, ...W(4, 84), 90, ...W(PAY_KEYS.length, 84), 100, 84, 84, 96, 84, 92, 92, 70, 220, 110], freeze: { r: 1, c: 4 }, bind: { type: 'cardAssign', startRow: 1, col: V.cardCo, keys: visits.map((v) => v.key) },
       validations: [{ col: V.cardCo, fromRow: 1, toRow: vEnd - 1, list: `${q(SH.T)}!$A$${CARD_TOP + 1}:$A$${CARD_MAX}` }] },
     { name: SH.L, icon: 'list', desc: 'POS 원본 — 시술 1건 = 1행', rows: lRows, widths: [128, 70, 70, 76, 108, 52, 190, 80, 48, 80, 80, 88, 80, ...W(PAY_KEYS.length, 84), 70, 260, 64], freeze: { r: 1, c: 4 }, bind: { type: 'none' } },

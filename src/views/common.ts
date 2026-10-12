@@ -4,17 +4,11 @@ import { SH, VCOL } from '../lib/workbook';
 import { UNASSIGNED, PAY_KEYS, PayKey, EXPENSE_GROUPS, INCOME_GROUPS } from '../lib/model';
 import { serialToParts, customerKey } from '../lib/data';
 
-export const PAY_META: Record<PayKey, { icon: string; color: string; bg: string }> = {
-  cash: { icon: 'cash', color: '#6F8F5E', bg: '#E8F0E3' },
-  card: { icon: 'card', color: '#B9636C', bg: '#F8E4E2' },
-  transfer: { icon: 'bank', color: '#5E7FA6', bg: '#E5EDF6' },
-  naver: { icon: 'naver', color: '#2E9E55', bg: '#E1F3E6' },
-  etc1: { icon: 'coin', color: '#A0763F', bg: '#FBEBDC' },
-  etc2: { icon: 'coin', color: '#8C6BA8', bg: '#EFE6F5' },
-  etc3: { icon: 'coin', color: '#7A8C99', bg: '#E9EEF1' },
-  unpaid: { icon: 'hourglass', color: '#C8575F', bg: '#FBE6E5' },
+export const PAY_META: Record<PayKey, { icon: string }> = {
+  cash: { icon: 'cash' }, card: { icon: 'card' }, transfer: { icon: 'bank' }, naver: { icon: 'naver' },
+  etc1: { icon: 'coin' }, etc2: { icon: 'coin' }, etc3: { icon: 'coin' }, unpaid: { icon: 'hourglass' },
 };
-export const DONUT_COLORS: Record<PayKey, string> = { cash: '#A9C79F', card: '#D9878F', transfer: '#93AED0', naver: '#5DBB7E', etc1: '#EDBE95', etc2: '#B9A0CF', etc3: '#A9B6C0', unpaid: '#E2A3A6' };
+export const DONUT_COLORS: Record<PayKey, string> = { card: '#4A2E1F', naver: '#8C6E58', transfer: '#B89A80', cash: '#D9CBBB', etc1: '#6B4A36', etc2: '#A68B76', etc3: '#E6DCCF', unpaid: '#AE3F36' };
 export const WD = ['일', '월', '화', '수', '목', '금', '토'];
 export const groupMeta = (name: string) => [...EXPENSE_GROUPS, ...INCOME_GROUPS].find((g) => g.name === name) ?? EXPENSE_GROUPS[EXPENSE_GROUPS.length - 1];
 

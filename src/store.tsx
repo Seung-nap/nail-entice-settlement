@@ -16,9 +16,19 @@ declare global {
       saveFile: (name: string, data: ArrayBuffer, kind: 'xlsx' | 'json') => Promise<string | null>;
       openDataFolder: () => Promise<void>;
       platform: string;
+      version: () => Promise<string>;
+      update: {
+        get: () => Promise<UpdateState & { current: string }>;
+        check: () => Promise<void>;
+        install: () => Promise<void>;
+        onState: (cb: (st: UpdateState) => void) => () => void;
+      };
     };
+    __flushSave?: () => void;
   }
 }
+
+export interface UpdateState { state: 'idle' | 'checking' | 'latest' | 'downloading' | 'ready' | 'error'; version?: string; percent?: number; message?: string; }
 
 const LS_KEY = 'nail-entice-data-v1';
 
@@ -44,12 +54,15 @@ function saveData(d: AppData) {
     if (window.api) window.api.save(json); else try { localStorage.setItem(LS_KEY, json); } catch { /* 용량 초과 */ }
   }, 250);
 }
-// 창을 닫을 때 아직 저장 안 된 변경을 동기로 기록
-window.addEventListener('beforeunload', () => {
+// 아직 저장 안 된 변경을 즉시 동기로 기록 — 창 닫기·업데이트 설치 직전에 호출된다
+function flushSave() {
+  window.clearTimeout(saveTimer);
   if (!pendingSave) return;
   const json = JSON.stringify(pendingSave); pendingSave = null;
   if (window.api) window.api.saveSync(json); else try { localStorage.setItem(LS_KEY, json); } catch { /* */ }
-});
+}
+window.__flushSave = flushSave;
+window.addEventListener('beforeunload', flushSave);
 
 export type MonthSel = number | 'all';
 export interface Toast { id: string; text: string; tone?: 'ok' | 'warn' | 'err'; icon?: string; }

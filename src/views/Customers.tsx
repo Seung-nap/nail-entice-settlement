@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { useApp } from '../store';
-import { Icon, Heart } from '../components/Icons';
-import { Avatar, Empty, Modal, Seg, Stagger } from '../components/ui';
+import { Icon } from '../components/Icons';
+import { Avatar, Empty, Modal, Seg, Strip } from '../components/ui';
 import { BarChart } from '../components/Charts';
 import { useVisitRows, VisitRow } from './common';
 import { monthShort, wonShort, serialToIso, maskPhone } from '../lib/data';
@@ -42,16 +42,12 @@ export default function Customers() {
 
   return (
     <div>
-      <div className="grid g-12" style={{ marginBottom: 16 }}>
-        {[
-          { l: '방문 고객', v: `${custs.length}명`, ic: 'people', t: '#8E9CC4' },
-          { l: month === 'all' ? '전체 고객' : '이 달 신규', v: `${month === 'all' ? custs.length : newCnt}명`, ic: 'sparkle', t: '#E3A86B' },
-          { l: '단골 (누적 3회+)', v: `${regular}명`, ic: 'heart', t: '#D9878F' },
-          { l: '1인당 결제', v: `${wonShort(total / (custs.length || 1))}원`, ic: 'coin', t: '#7FA37A' },
-        ].map((x, i) => (
-          <Stagger key={x.l} i={i} className="span-3"><div className="card hover"><div className="kpi-label"><span className="chip-ic" style={{ width: 26, height: 26, borderRadius: 8, background: `${x.t}22`, color: x.t }}><Icon name={x.ic} size={15} /></span>{x.l}</div><div className="kpi-value" style={{ fontSize: 24 }}>{x.v}</div></div></Stagger>
-        ))}
-      </div>
+      <Strip items={[
+        { l: '방문 고객', v: <>{custs.length}<small>명</small></> },
+        { l: month === 'all' ? '전체 고객' : '이 달 신규', v: <>{month === 'all' ? custs.length : newCnt}<small>명</small></> },
+        { l: '단골 (누적 3회 이상)', v: <>{regular}<small>명</small></> },
+        { l: '1인당 결제', v: <>{wonShort(total / (custs.length || 1))}<small>원</small></> },
+      ]} />
       <div className="toolbar">
         <div className="search"><Icon name="search" size={16} /><input placeholder="이름 · 전화번호 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
         <Seg id="csort" value={sort} onChange={setSort} options={[{ v: 'total', l: '결제순' }, { v: 'visits', l: '방문순' }, { v: 'avg', l: '객단가순' }, { v: 'recent', l: '최근순' }]} />
@@ -64,12 +60,12 @@ export default function Customers() {
             <tbody>
               {list.slice(0, 300).map((c, i) => (
                 <motion.tr key={c.key} className="click" onClick={() => setSel(c)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: Math.min(i, 20) * .015 }}>
-                  <td className="b" style={{ color: i < 3 ? '#B9636C' : '#B5A496' }}>{i + 1}</td>
-                  <td><div className="flex" style={{ gap: 10 }}><Avatar name={c.name} size={32} /><div><div className="cust-name">{c.name}{c.all.length >= 3 && <span className="tag reg">단골</span>}{i === 0 && sort === 'total' && <Heart size={11} />}</div><div className="cust-sub">{c.phone ? maskPhone(c.phone).replace(/-(\d+)-/, '-****-') : '연락처 없음'}</div></div></div></td>
+                  <td className="b" style={{ color: i < 3 ? '#4A2E1F' : '#6E625A' }}>{i + 1}</td>
+                  <td><div className="flex" style={{ gap: 10 }}><Avatar name={c.name} size={32} /><div><div className="cust-name">{c.name}{c.all.length >= 3 && <span className="tag reg">단골</span>}</div><div className="cust-sub">{c.phone ? maskPhone(c.phone).replace(/-(\d+)-/, '-****-') : '연락처 없음'}</div></div></div></td>
                   <td className="r b num">{c.visits.length}회</td>
                   <td className="r b num">{c.total.toLocaleString()}원</td>
                   <td className="r num muted">{Math.round(c.total / c.visits.length).toLocaleString()}</td>
-                  <td><div className="mdots">{months.map((m) => { const x = c.byMonth.get(m); const a = x ? .25 + .75 * (x.n / maxN) : 0; return <span key={m} className="mdot" title={`${monthShort(m)} ${x ? `${x.n}회 · ${x.v.toLocaleString()}원` : '방문 없음'}`} style={x ? { background: `rgba(217,135,143,${a})`, outline: m === month ? '2px solid #4A2E1F' : undefined } : { outline: m === month ? '2px solid #E2D6C8' : undefined }}>{x && x.n > 1 ? x.n : ''}</span>; })}</div></td>
+                  <td><div className="mdots">{months.map((m) => { const x = c.byMonth.get(m); const a = x ? .25 + .75 * (x.n / maxN) : 0; return <span key={m} className="mdot" title={`${monthShort(m)} ${x ? `${x.n}회 · ${x.v.toLocaleString()}원` : '방문 없음'}`} style={x ? { background: `rgba(74,46,31,${a})`, outline: m === month ? '2px solid #4A2E1F' : undefined } : { outline: m === month ? '2px solid #E2D6C8' : undefined }}>{x && x.n > 1 ? x.n : ''}</span>; })}</div></td>
                   <td className="r muted num">{serialToIso(c.last).slice(5).replace('-', '.')}</td>
                 </motion.tr>
               ))}

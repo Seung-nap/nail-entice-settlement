@@ -4,3 +4,7 @@ release/
 # 고객 개인정보가 담긴 매출 엑셀은 커밋하지 않는다
 data-sample/
 *.xlsx
+# impeccable 리뷰 캡처·시안에는 실제 고객 이름이 보인다 — 커밋 금지
+.impeccable/review/
+.impeccable/mocks/
+.impeccable/build/

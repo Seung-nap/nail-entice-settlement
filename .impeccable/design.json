@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-13T00:00:00+09:00",
+  "title": "Design System: Nail Entice 정산",
+  "extensions": {
+    "colorMeta": {
+      "espresso":        { "role": "primary",   "displayName": "Espresso",        "canonical": "#4A2E1F", "tonalRamp": ["#2B1D15", "#4A2E1F", "#5B3A28", "#6B4A36", "#8C6E58", "#B89A80", "#D9CBBB", "#E6DCCF"] },
+      "espresso-press":  { "role": "primary",   "displayName": "Espresso Press",  "canonical": "#5B3A28", "tonalRamp": ["#2B1D15", "#4A2E1F", "#5B3A28", "#6B4A36", "#8C6E58", "#B89A80", "#D9CBBB", "#E6DCCF"] },
+      "walnut":          { "role": "secondary", "displayName": "Walnut",          "canonical": "#6B4A36", "tonalRamp": ["#2B1D15", "#4A2E1F", "#5B3A28", "#6B4A36", "#8C6E58", "#B89A80", "#D9CBBB", "#E6DCCF"] },
+      "cocoa":           { "role": "tertiary",  "displayName": "Cocoa",           "canonical": "#8C6E58", "tonalRamp": ["#2B1D15", "#4A2E1F", "#6B4A36", "#8C6E58", "#A68B76", "#B89A80", "#D9CBBB", "#E6DCCF"] },
+      "tan":             { "role": "tertiary",  "displayName": "Tan",             "canonical": "#B89A80", "tonalRamp": ["#2B1D15", "#4A2E1F", "#6B4A36", "#8C6E58", "#A68B76", "#B89A80", "#D9CBBB", "#E6DCCF"] },
+      "oat":             { "role": "tertiary",  "displayName": "Oat",             "canonical": "#D9CBBB", "tonalRamp": ["#2B1D15", "#4A2E1F", "#6B4A36", "#8C6E58", "#A68B76", "#B89A80", "#D9CBBB", "#E6DCCF"] },
+      "canvas":          { "role": "neutral",   "displayName": "Canvas White",    "canonical": "#FFFFFF", "tonalRamp": ["#1F1611", "#3D312A", "#6E625A", "#8E827A", "#E2DAD0", "#EFE9E0", "#F6F2EC", "#FFFFFF"] },
+      "parchment":       { "role": "neutral",   "displayName": "Parchment",       "canonical": "#F6F2EC", "tonalRamp": ["#1F1611", "#3D312A", "#6E625A", "#8E827A", "#E2DAD0", "#EFE9E0", "#F6F2EC", "#FBF9F6"] },
+      "parchment-deep":  { "role": "neutral",   "displayName": "Sidebar Parchment","canonical": "#EFE9E0", "tonalRamp": ["#1F1611", "#3D312A", "#6E625A", "#8E827A", "#E2DAD0", "#EFE9E0", "#F6F2EC", "#FBF9F6"] },
+      "pearl":           { "role": "neutral",   "displayName": "Pearl",           "canonical": "#FBF9F6", "tonalRamp": ["#1F1611", "#3D312A", "#6E625A", "#8E827A", "#E2DAD0", "#EFE9E0", "#F6F2EC", "#FBF9F6"] },
+      "switch-off":      { "role": "neutral",   "displayName": "Switch Track",    "canonical": "#E2DAD0", "tonalRamp": ["#1F1611", "#3D312A", "#6E625A", "#8E827A", "#E2DAD0", "#EFE9E0", "#F6F2EC", "#FBF9F6"] },
+      "ink":             { "role": "neutral",   "displayName": "Ink",             "canonical": "#1F1611", "tonalRamp": ["#1F1611", "#3D312A", "#6E625A", "#8E827A", "#E2DAD0", "#EFE9E0", "#F6F2EC", "#FBF9F6"] },
+      "ink-80":          { "role": "neutral",   "displayName": "Ink 80",          "canonical": "#3D312A", "tonalRamp": ["#1F1611", "#3D312A", "#6E625A", "#8E827A", "#E2DAD0", "#EFE9E0", "#F6F2EC", "#FBF9F6"] },
+      "ink-60":          { "role": "neutral",   "displayName": "Ink 60",          "canonical": "#6E625A", "tonalRamp": ["#1F1611", "#3D312A", "#6E625A", "#8E827A", "#E2DAD0", "#EFE9E0", "#F6F2EC", "#FBF9F6"] },
+      "ink-48":          { "role": "neutral",   "displayName": "Ink 48",          "canonical": "#8E827A", "tonalRamp": ["#1F1611", "#3D312A", "#6E625A", "#8E827A", "#E2DAD0", "#EFE9E0", "#F6F2EC", "#FBF9F6"] },
+      "hairline":        { "role": "neutral",   "displayName": "Hairline",        "canonical": "rgba(31, 22, 17, .09)" },
+      "hairline-strong": { "role": "neutral",   "displayName": "Hairline Strong", "canonical": "rgba(31, 22, 17, .16)" },
+      "pos":             { "role": "semantic",  "displayName": "Ledger Green",    "canonical": "#2D6A45", "tonalRamp": ["#123020", "#1E4A31", "#2D6A45", "#3F8459", "#6FA584", "#A3C6AF", "#CFE2D5", "#EAF2EC"] },
+      "pos-bg":          { "role": "semantic",  "displayName": "Ledger Green Wash","canonical": "#EAF2EC" },
+      "neg":             { "role": "semantic",  "displayName": "Brick Red",       "canonical": "#AE3F36", "tonalRamp": ["#4A1813", "#72261F", "#AE3F36", "#C25A50", "#D58A82", "#E6B7B1", "#F1D8D4", "#F8E9E6"] },
+      "neg-bg":          { "role": "semantic",  "displayName": "Brick Red Wash",  "canonical": "#F8E9E6" }
+    },
+    "typographyMeta": {
+      "display":  { "displayName": "Display",     "purpose": "히어로 순수익 숫자 한 개(웰컴 h1 40px도 이 계열)." },
+      "headline": { "displayName": "Headline",    "purpose": "상단 frosted 바의 페이지 제목." },
+      "figure":   { "displayName": "Figure",      "purpose": "KPI 카드·숫자 띠의 값. 단위는 17px 400 Ink 60." },
+      "title-lg": { "displayName": "Title Large", "purpose": "모달 제목." },
+      "title":    { "displayName": "Title",       "purpose": "카드 제목, 날짜 그룹 머리, 목록 금액, 빈 상태 제목." },
+      "body":     { "displayName": "Body",        "purpose": "기본 본문·버튼·메뉴·입력. 이름은 같은 크기 600." },
+      "label":    { "displayName": "Label",       "purpose": "KPI 라벨, 세그먼트·필터 알약, 범례, 작은 버튼." },
+      "caption":  { "displayName": "Caption",     "purpose": "카드 설명, 각주, 표 머리, 칩, 필드 라벨." },
+      "micro":    { "displayName": "Micro",       "purpose": "증감 배지 퍼센트." }
+    },
+    "shadows": [
+      { "name": "modal-lift", "value": "0 0 0 1px rgba(31,22,17,.09), 0 24px 60px rgba(31,22,17,.18)", "purpose": "모달 하나에만. 실제로 떠 있는 유일한 판." },
+      { "name": "switch-knob", "value": "0 0 0 .5px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.15)", "purpose": "스위치 손잡이의 물성." },
+      { "name": "hairline-ring", "value": "inset 0 0 0 1px rgba(31,22,17,.09)", "purpose": "카드·목록 판 외곽선(그림자 아님). hover 시 .16." },
+      { "name": "focus-inset", "value": "inset 0 0 0 2px #6B4A36", "purpose": "입력·검색·셀렉트 포커스." },
+      { "name": "frosted-blur", "value": "backdrop-filter: saturate(180%) blur(20px)", "purpose": "상단바·날짜 sticky 머리·모달·토스트·오버레이에만." }
+    ],
+    "motion": [
+      { "name": "ease", "value": "cubic-bezier(.16, 1, .3, 1)", "purpose": "모든 CSS 전환(누름 scale, 쉐브론 회전, 스위치)." },
+      { "name": "press", "value": "transform: scale(.95) 150ms", "purpose": "버튼·알약·칩 누름. 사이드바 항목은 .97." },
+      { "name": "spring", "value": "spring stiffness 420, damping 34, mass .8", "purpose": "세그먼트 썸·사이드바 알약 layoutId, 모달·토스트 진입." },
+      { "name": "soft-spring", "value": "spring stiffness 220, damping 28", "purpose": "부드러운 보조 진입." },
+      { "name": "count-up", "value": "0.9s cubic-bezier(.22, 1, .36, 1)", "purpose": "KPI 숫자 카운트업." },
+      { "name": "stagger", "value": "opacity 0.3s, 20ms per item (max 8)", "purpose": "카드 페이드 진입." },
+      { "name": "reduced-motion", "value": "all durations .01ms", "purpose": "prefers-reduced-motion 존중." }
+    ],
+    "breakpoints": [
+      { "name": "exp-single-column", "value": "1220px" },
+      { "name": "grid-collapse", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "화면당 하나의 주 동작. 에스프레소 알약, 누르면 줄어든다.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 15.5V4.5\"/><path d=\"m7.5 9 4.5-4.5L16.5 9\"/><path d=\"M4.5 15v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3\"/></svg>매출 엑셀 올리기</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 18px; border: 0; border-radius: 9999px; background: var(--primary, #4A2E1F); color: #fff; font: 400 15px/1 'Pretendard Variable', Pretendard, system-ui, sans-serif; letter-spacing: -.2px; cursor: pointer; transition: background .15s, transform .15s cubic-bezier(.16,1,.3,1); } .ds-btn-primary:hover { background: #5B3A28; } .ds-btn-primary:active { transform: scale(.95); } .ds-btn-primary:focus-visible { outline: 2px solid #6B4A36; outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "카드 머리의 보조 동작(자세히·전체 보기). 에스프레소 테두리 알약.",
+      "html": "<button class=\"ds-btn-ghost\">자세히</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 13px; border: 0; border-radius: 9999px; background: transparent; color: #4A2E1F; box-shadow: inset 0 0 0 1px #4A2E1F; font: 400 14px/1 'Pretendard Variable', Pretendard, system-ui, sans-serif; letter-spacing: -.2px; cursor: pointer; transition: background .15s, transform .15s cubic-bezier(.16,1,.3,1); } .ds-btn-ghost:hover { background: rgba(74,46,31,.05); } .ds-btn-ghost:active { transform: scale(.95); } .ds-btn-ghost:focus-visible { outline: 2px solid #6B4A36; outline-offset: 2px; }"
+    },
+    {
+      "name": "Month Segment",
+      "kind": "nav",
+      "refersTo": "segment",
+      "description": "파치먼트 트랙 위 흰 썸이 미끄러지는 월 선택.",
+      "html": "<div class=\"ds-seg\"><button>8월</button><button>9월</button><button class=\"on\">10월</button><button>전체</button></div>",
+      "css": ".ds-seg { display: inline-flex; padding: 2px; border-radius: 9999px; background: #F6F2EC; } .ds-seg button { height: 30px; padding: 0 14px; border: 0; border-radius: 9999px; background: transparent; color: #6E625A; font: 400 14px/1 'Pretendard Variable', Pretendard, system-ui, sans-serif; letter-spacing: -.2px; cursor: pointer; transition: color .15s; } .ds-seg button:hover:not(.on) { color: #1F1611; } .ds-seg button.on { background: #fff; color: #1F1611; font-weight: 600; box-shadow: 0 0 0 1px rgba(31,22,17,.09); } .ds-seg button:focus-visible { outline: 2px solid #6B4A36; outline-offset: 2px; }"
+    },
+    {
+      "name": "Hero Profit Tile",
+      "kind": "card",
+      "refersTo": "card-hero",
+      "description": "화면의 주인공 숫자. 테두리 없는 파치먼트 판 + 에스프레소 Display.",
+      "html": "<div class=\"ds-hero\"><div class=\"ds-hero-l\">2026년 10월 순수익</div><div class=\"ds-hero-v\">1,203,613<span>원</span></div><div class=\"ds-hero-f\"><span class=\"ds-delta-up\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 19V5M6 11l6-6 6 6\"/></svg>9.5%</span>지난달 대비</div></div>",
+      "css": ".ds-hero { padding: 24px; border-radius: 18px; background: #F6F2EC; font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif; font-feature-settings: 'tnum' 1; max-width: 520px; transition: box-shadow .2s; } .ds-hero:hover { box-shadow: inset 0 0 0 1px rgba(31,22,17,.16); } .ds-hero-l { font: 600 15px/1.3 inherit; color: #1F1611; } .ds-hero-v { font-weight: 600; font-size: 44px; line-height: 1.05; letter-spacing: -.8px; margin-top: 14px; color: #4A2E1F; } .ds-hero-v span { font-size: 21px; font-weight: 400; color: #6E625A; margin-left: 2px; letter-spacing: -.2px; } .ds-hero-f { margin-top: 14px; display: flex; align-items: center; gap: 6px; font-size: 13px; color: #6E625A; } .ds-delta-up { display: inline-flex; align-items: center; gap: 2px; padding: 4px 7px 4px 5px; border-radius: 9999px; background: #EAF2EC; color: #2D6A45; font-size: 12px; font-weight: 600; }"
+    },
+    {
+      "name": "Number Strip",
+      "kind": "custom",
+      "refersTo": "strip",
+      "description": "KPI 카드 반복 대신 파치먼트 한 줄을 헤어라인으로 나눈 숫자 띠.",
+      "html": "<div class=\"ds-strip\"><div class=\"ds-strip-c\"><div class=\"l\">10월 지출</div><div class=\"v\">0<small>원</small></div></div><div class=\"ds-strip-c\"><div class=\"l\">그중 고정비</div><div class=\"v\">0<small>원</small></div></div><div class=\"ds-strip-c\"><div class=\"l\">기타 수입</div><div class=\"v\">0<small>원</small></div></div></div>",
+      "css": ".ds-strip { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0,1fr); padding: 22px 0; border-radius: 18px; background: #F6F2EC; font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif; font-feature-settings: 'tnum' 1; } .ds-strip-c { padding: 0 24px; } .ds-strip-c + .ds-strip-c { box-shadow: inset 1px 0 0 rgba(31,22,17,.16); } .ds-strip-c .l { font-size: 14px; line-height: 1.3; letter-spacing: -.224px; color: #6E625A; } .ds-strip-c .v { margin-top: 10px; font-size: 28px; font-weight: 600; line-height: 1.15; letter-spacing: -.5px; color: #1F1611; } .ds-strip-c .v small { font-size: 17px; font-weight: 400; color: #6E625A; margin-left: 2px; }"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "search",
+      "description": "흰 알약 + Strong 헤어라인, 포커스 시 월넛 2px 인셋.",
+      "html": "<label class=\"ds-search\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"6\"/><path d=\"m20 20-4.2-4.2\"/></svg><input placeholder=\"고객 · 시술 · 메모 검색\"></label>",
+      "css": ".ds-search { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; min-width: 280px; border-radius: 9999px; background: #fff; box-shadow: inset 0 0 0 1px rgba(31,22,17,.16); color: #6E625A; transition: box-shadow .15s; } .ds-search:focus-within { box-shadow: inset 0 0 0 2px #6B4A36; } .ds-search input { flex: 1; border: 0; outline: 0; background: transparent; color: #1F1611; font: 400 15px/1 'Pretendard Variable', Pretendard, system-ui, sans-serif; letter-spacing: -.2px; caret-color: #4A2E1F; } .ds-search input::placeholder { color: #6E625A; }"
+    },
+    {
+      "name": "Filter Pills",
+      "kind": "chip",
+      "refersTo": "filter-pill",
+      "description": "흰 테두리 알약 필터, 켜지면 에스프레소 면.",
+      "html": "<div class=\"ds-pills\"><button class=\"ds-pill on\">전체</button><button class=\"ds-pill\">현금</button><button class=\"ds-pill\">카드</button><button class=\"ds-pill\">네이버페이</button></div>",
+      "css": ".ds-pills { display: flex; gap: 6px; flex-wrap: wrap; } .ds-pill { height: 32px; padding: 0 14px; border: 0; border-radius: 9999px; background: #fff; color: #3D312A; box-shadow: inset 0 0 0 1px rgba(31,22,17,.16); font: 400 14px/1 'Pretendard Variable', Pretendard, system-ui, sans-serif; letter-spacing: -.2px; cursor: pointer; transition: background .15s, transform .15s cubic-bezier(.16,1,.3,1); } .ds-pill:hover:not(.on) { background: #FBF9F6; } .ds-pill:active { transform: scale(.95); } .ds-pill.on { background: #4A2E1F; color: #fff; box-shadow: none; } .ds-pill:focus-visible { outline: 2px solid #6B4A36; outline-offset: 2px; }"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "파치먼트 사이드바, 선택 항목만 에스프레소 알약.",
+      "html": "<nav class=\"ds-side\"><div class=\"ds-side-l\">정산</div><button class=\"ds-nav on\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 10.5 12 4l8 6.5\"/><path d=\"M6 9.5V19a1 1 0 0 0 1 1h3.5v-5h3v5H17a1 1 0 0 0 1-1V9.5\"/></svg>홈</button><button class=\"ds-nav\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"5.5\" width=\"18\" height=\"13\" rx=\"2.8\"/><path d=\"M3 10h18\"/><path d=\"M6.5 15h3.5\"/></svg>결제 · 수수료</button></nav>",
+      "css": ".ds-side { width: 236px; padding: 16px 12px; background: #EFE9E0; display: flex; flex-direction: column; gap: 2px; font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif; } .ds-side-l { font-size: 13px; font-weight: 600; color: #6E625A; padding: 18px 10px 8px; letter-spacing: -.12px; } .ds-nav { display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; color: #3D312A; font: 400 15px/1 inherit; letter-spacing: -.2px; cursor: pointer; text-align: left; transition: background .15s, transform .15s cubic-bezier(.16,1,.3,1); } .ds-nav svg { color: #6E625A; } .ds-nav:hover:not(.on) { background: rgba(31,22,17,.05); } .ds-nav:active { transform: scale(.97); } .ds-nav.on { background: #4A2E1F; color: #fff; font-weight: 600; } .ds-nav.on svg { color: #fff; } .ds-nav:focus-visible { outline: 2px solid #6B4A36; outline-offset: 2px; }"
+    },
+    {
+      "name": "Toast",
+      "kind": "custom",
+      "refersTo": "toast",
+      "description": "하단 가운데 잉크 frosted 알약 알림.",
+      "html": "<div class=\"ds-toast\"><span class=\"ti\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m5 12.5 4.5 4.5L19 7.5\"/></svg></span>5건을 현대카드로 지정했어요</div>",
+      "css": ".ds-toast { display: inline-flex; align-items: center; gap: 9px; padding: 10px 18px 10px 10px; border-radius: 9999px; background: rgba(31,22,17,.88); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); color: #fff; font: 400 15px/1.3 'Pretendard Variable', Pretendard, system-ui, sans-serif; letter-spacing: -.2px; } .ds-toast .ti { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.16); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Ledger",
+    "overview": "숫자가 주인공인 조용한 Apple식 재무 화면이다. Apple 웹 디자인 시스템의 문법(흰 캔버스, 단 하나의 액션 컬러, 그림자 없는 면, 고정 바에만 쓰는 frosted 블러, 음의 자간 제목, 알약 CTA, 누를 때 줄어드는 반응)을 그대로 가져오고, Apple Blue 자리에 네일엔티스 로고의 에스프레소 브라운을 앉혔다. 원장님이 화면을 열면 가장 먼저 파치먼트 타일 위의 큰 갈색 숫자(이번 달 순수익)가 읽히고, 나머지는 흰 면과 1px 헤어라인 사이에서 물러나 있다.\n\n밀도는 \"노트북 한 화면에 한 달\"이다. 사이드바 236px + 12열 그리드, 24px 간격, 카드 안 24px 패딩. 장식은 없다: 그라데이션·색 아이콘 칩·그림자 카드·블롭으로 채운 AI 대시보드를 명시적으로 거부한 결과물이며, 차이는 면 색(흰 → 파치먼트 → 사이드바 베이지)과 숫자 크기로만 만든다. 색 비율은 사용자가 고정했다: 흰 60 · 베이지 30 · 브라운 10.\n\n움직임은 짧고 스프링 기반이다(motion/react `stiffness 420, damping 34`). 세그먼트 썸과 사이드바 선택 알약은 `layoutId`로 미끄러지고, 숫자는 0.9초 카운트업, 카드는 20ms 간격 페이드로 들어온다. `prefers-reduced-motion`에서는 전부 즉시 끝난다.",
+    "keyCharacteristics": [
+      "단일 강조색 에스프레소, 나머지는 따뜻한 무채(파치먼트·잉크) 계열",
+      "카드·버튼 그림자 0 — 1px 인셋 헤어라인 + 면 색 전환으로 분리",
+      "블러는 위에 떠서 내용이 아래로 지나가는 것(상단바·날짜 헤더·모달·토스트·오버레이)에만",
+      "Pretendard Variable 400/600/700, 모든 제목·숫자에 음의 자간, 전역 tabular figures",
+      "반경 4단(8 / 11 / 18 / 알약), 누름 `scale(.95)`",
+      "차트는 브라운 명도 단계만, 의미색(초록·빨강)은 증감에만"
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "에스프레소는 \"지금 선택된 것\"과 \"지금 누를 것\", 그리고 화면당 하나의 주인공 숫자에만 쓴다. 한 화면에 채워진 에스프레소 면이 사이드바 선택 알약 + 주 CTA + 켜진 필터 하나를 넘으면 과하다.", "section": "colors" },
+      { "name": "The 60·30·10 Rule", "body": "흰 캔버스 60, 파치먼트·사이드바 베이지 30, 브라운 10. 새 화면은 이 비율을 깨지 않는 선에서 파치먼트 타일을 \"가장 중요한 숫자\"에만 준다.", "section": "colors" },
+      { "name": "The Brown Ramp Rule", "body": "차트 계열색은 브라운 명도 단계(Espresso / Walnut / Cocoa / Tan / Oat)로만 구분한다. 색상(hue)을 추가해 계열을 나누지 않는다. 빨강은 '미결제'나 음수 결과처럼 경고 의미가 있을 때만.", "section": "colors" },
+      { "name": "The Flat Fill Rule", "body": "그라데이션 금지(사용자 고정). 모든 면은 단색.", "section": "colors" },
+      { "name": "The No-500 Rule", "body": "굵기는 400 / 600 / 700만. 600이 제목·숫자·선택 상태, 700은 도넛 중앙값과 스프레드시트 순수익 셀처럼 \"결론 숫자\"에만. 500은 쓰지 않는다.", "section": "typography" },
+      { "name": "The Negative Tracking Rule", "body": "15px 이상 모든 글자는 음의 자간(-.2 ~ -.8px)을 가진다. 크기가 클수록 더 조인다. 12px 배지만 0.", "section": "typography" },
+      { "name": "The Unit Step-Down Rule", "body": "금액 옆 단위(원·건)는 숫자보다 한 단계 작고 400·Ink 60. 숫자가 먼저 읽힌다.", "section": "typography" },
+      { "name": "The Strip Over Repetition Rule", "body": "같은 모양의 숫자 카드를 4개 이상 나란히 반복하지 않는다. 대신 파치먼트 한 줄(숫자 띠)을 Hairline Strong 세로선으로 나눈다. KPI 카드는 히어로 옆 3개까지.", "section": "layout" },
+      { "name": "The Hairline Not Shadow Rule", "body": "카드·버튼·입력·칩에 드롭 섀도를 주지 않는다. 구분이 더 필요하면 헤어라인을 Strong으로 올리거나 면을 파치먼트로 바꾼다. hover 카드도 헤어라인만 .09 → .16으로 진해진다.", "section": "elevation" },
+      { "name": "The Blur Is For Floating Rule", "body": "backdrop blur는 아래로 내용이 지나가는 고정·오버레이 요소에만. 스크롤되는 카드나 사이드바에는 쓰지 않는다. 상단바는 스크롤이 시작될 때만 아래 헤어라인이 나타난다.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do 화면당 하나의 주인공 숫자를 Parchment 타일 + Display(600 44px, -.8px) Espresso로 띄운다.",
+      "Do 카드·목록·입력은 흰 면 + `inset 0 0 0 1px` 헤어라인(rgba(31,22,17,.09), 강조 .16)으로만 구분한다.",
+      "Do 모든 누를 수 있는 알약·칩에 `transform: scale(.95)` 누름 반응을 150ms `cubic-bezier(.16,1,.3,1)`로 준다.",
+      "Do 선택 상태(세그먼트 썸, 사이드바 알약)는 `layoutId` 스프링으로 미끄러지게 한다.",
+      "Do 금액은 tabular figures, 오른쪽 정렬, 단위는 한 단계 작게 Ink 60으로.",
+      "Do 차트 계열은 Espresso / Walnut / Cocoa / Tan / Oat 명도 단계로만 나눈다.",
+      "Do 상태는 색과 형태를 함께 쓴다 — 증감 배지에 화살표, 페디 칩은 테두리 알약.",
+      "Do 아이콘은 24 그리드 1.7px 둥근 라인 SVG(`currentColor`)로."
+    ],
+    "donts": [
+      "Don't 카드·버튼·입력·칩에 드롭 섀도를 넣지 않는다(모달 lift와 스위치 손잡이만 예외).",
+      "Don't 그라데이션을 쓰지 않는다 — 배경·면·차트 모두 단색(사용자 고정 제약).",
+      "Don't 에스프레소 외의 두 번째 강조 색상(파랑·핑크·보라 등)을 들이지 않는다.",
+      "Don't 색 아이콘 칩, 블롭, 무지개 차트로 채운 \"AI 대시보드\" 문법을 쓰지 않는다.",
+      "Don't 스크롤되는 카드나 사이드바에 backdrop blur를 쓰지 않는다.",
+      "Don't 굵기 500을 쓰지 않는다. 15px 이상 글자를 0 자간으로 두지 않는다.",
+      "Don't 같은 모양의 KPI 카드를 4개 이상 반복하지 않는다 — 숫자 띠로 묶는다.",
+      "Don't 반경 4단(8 / 11 / 18 / 알약) 밖의 값을 새로 만들지 않는다.",
+      "Don't 이모지를 아이콘으로 쓰지 않는다."
+    ]
+  }
+}

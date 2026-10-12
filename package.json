@@ -1,7 +1,7 @@
 {
   "name": "nail-entice-settlement",
   "productName": "Nail Entice 정산",
-  "version": "1.1.0",
+  "version": "1.3.0",
   "description": "네일엔티스 월말정산 프로그램",
   "author": "Nail Entice",
   "private": true,
@@ -10,7 +10,8 @@
     "dev": "vite",
     "build": "vite build",
     "start": "vite build && electron .",
-    "dist": "vite build && electron-builder --win --x64"
+    "dist": "vite build && electron-builder --win --x64",
+    "release": "vite build && electron-builder --win --x64 --publish always"
   },
   "build": {
     "appId": "com.nailentice.settlement",
@@ -32,34 +33,50 @@
       "icon": "build/icon.ico"
     },
     "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
+      "oneClick": true,
+      "perMachine": false,
+      "deleteAppDataOnUninstall": false,
       "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
       "shortcutName": "Nail Entice 정산",
       "artifactName": "NailEntice-Settlement-Setup-${version}.exe"
     },
     "portable": {
       "artifactName": "NailEntice-Settlement-Portable-${version}.exe"
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Seung-nap",
+        "repo": "nail-entice-settlement",
+        "releaseType": "release"
+      }
+    ]
   },
-  "dependencies": {},
+  "dependencies": {
+    "electron-updater": "^6.6.2"
+  },
   "devDependencies": {
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.5.0",
     "electron": "^37.2.0",
     "electron-builder": "^26.0.12",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5",
     "exceljs": "^4.4.0",
     "hyperformula": "^3.0.1",
     "motion": "^12.23.12",
     "pretendard": "^1.3.9",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   },
   "allowScripts": {
     "electron@37.2.0": true,
     "esbuild@0.25.12": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Seung-nap/nail-entice-settlement.git"
   }
 }

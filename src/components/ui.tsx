@@ -71,8 +71,8 @@ export function Seg<T extends string>({ value, options, onChange, id }: { value:
 }
 
 export const Stagger = ({ children, i = 0, className, style }: { children: React.ReactNode; i?: number; className?: string; style?: React.CSSProperties }) => (
-  <motion.div className={className} style={style} initial={{ opacity: 0, y: 14, scale: .985 }} animate={{ opacity: 1, y: 0, scale: 1 }}
-    transition={{ ...softSpring, delay: Math.min(i, 10) * .045 }}>{children}</motion.div>
+  <motion.div className={className} style={style} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+    transition={{ duration: .3, ease: [.16, 1, .3, 1], delay: Math.min(i, 8) * .02 }}>{children}</motion.div>
 );
 
 export function Modal({ open, onClose, children }: { open: boolean; onClose: () => void; children: React.ReactNode }) {
@@ -123,14 +123,26 @@ export function Switch({ on, onChange, label }: { on: boolean; onChange: (v: boo
 }
 
 /** 이름 이니셜 아바타 — 이름 해시로 브랜드 톤 중 하나 */
-const TONES = ['#D9878F', '#E3A86B', '#C9788A', '#A88BB5', '#8E9CC4', '#9DB59A', '#B58F6A', '#D7A0B7', '#7A8C99', '#C29D6B'];
-export const toneOf = (s: string) => TONES[[...s].reduce((a, c) => a + c.charCodeAt(0), 0) % TONES.length];
 export function Avatar({ name, size = 36 }: { name: string; size?: number }) {
-  const t = toneOf(name);
-  return <div className="avatar" style={{ width: size, height: size, background: `linear-gradient(135deg, ${t}, ${t}CC)`, fontSize: size * (name.length >= 3 ? .33 : .4) }}>{name.length >= 3 ? name.slice(1, 3) : name}</div>;
+  return <div className="avatar" style={{ width: size, height: size, fontSize: size * (name.length >= 3 ? .33 : .4) }}>{name.length >= 3 ? name.slice(1, 3) : name}</div>;
 }
 
 export function useHover() {
   const [h, setH] = useState<number | null>(null);
   return [h, setH] as const;
+}
+
+/** 파치먼트 한 줄에 숫자 여러 개 — 같은 카드 반복 대신 헤어라인으로 나눈 띠 */
+export function Strip({ items }: { items: { l: React.ReactNode; v: React.ReactNode; sub?: React.ReactNode }[] }) {
+  return (
+    <motion.div className="strip" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: .3 }}>
+      {items.map((x, i) => (
+        <div key={i} className="strip-cell">
+          <div className="strip-l">{x.l}</div>
+          <div className="strip-v num">{x.v}</div>
+          {x.sub != null && <div className="strip-s">{x.sub}</div>}
+        </div>
+      ))}
+    </motion.div>
+  );
 }

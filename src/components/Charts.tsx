@@ -8,6 +8,7 @@ function useWidth<T extends HTMLElement>() {
   const [w, setW] = useState(600);
   useLayoutEffect(() => {
     const el = ref.current; if (!el) return;
+    setW(Math.max(200, el.getBoundingClientRect().width)); // 첫 프레임 전에 바로 측정
     const ro = new ResizeObserver(([e]) => setW(Math.max(200, e.contentRect.width)));
     ro.observe(el); return () => ro.disconnect();
   }, []);
@@ -22,7 +23,7 @@ const niceMax = (v: number) => {
 
 export interface BarDatum { label: string; value: number; sub?: string; tone?: string; dim?: boolean; }
 
-export function BarChart({ data, height = 190, color = 'url(#bar-g)', fmt = wonShort, tipFmt }: { data: BarDatum[]; height?: number; color?: string; fmt?: (n: number) => string; tipFmt?: (d: BarDatum) => React.ReactNode }) {
+export function BarChart({ data, height = 190, color = '#8C6E58', fmt = wonShort, tipFmt }: { data: BarDatum[]; height?: number; color?: string; fmt?: (n: number) => string; tipFmt?: (d: BarDatum) => React.ReactNode }) {
   const [ref, w] = useWidth<HTMLDivElement>();
   const [hi, setHi] = useState<number | null>(null);
   const padL = 40, padB = 24, padT = 8;
@@ -32,15 +33,11 @@ export function BarChart({ data, height = 190, color = 'url(#bar-g)', fmt = wonS
   const barW = Math.min(26, bw * .62);
   const ticks = [0, .5, 1].map((t) => t * max);
   return (
-    <div ref={ref} style={{ position: 'relative', height }}>
+    <div ref={ref} style={{ position: 'relative', height, width: '100%', overflow: 'visible', minWidth: 0 }}>
       <svg width={w} height={height} style={{ display: 'block', overflow: 'visible' }}>
-        <defs>
-          <linearGradient id="bar-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#D9878F" /><stop offset="1" stopColor="#EDBE95" /></linearGradient>
-          <linearGradient id="bar-g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#E9C9C3" /><stop offset="1" stopColor="#F3E2D2" /></linearGradient>
-        </defs>
         {ticks.map((t, i) => {
           const y = padT + ih - (t / max) * ih;
-          return <g key={i}><line x1={padL} x2={w} y1={y} y2={y} stroke="rgba(74,46,31,.07)" strokeDasharray={i ? '3 4' : ''} /><text x={padL - 8} y={y + 4} textAnchor="end" fontSize="10.5" fill="#B5A496">{fmt(t)}</text></g>;
+          return <g key={i}><line x1={padL} x2={w} y1={y} y2={y} stroke="rgba(74,46,31,.07)" strokeDasharray={i ? '3 4' : ''} /><text x={padL - 8} y={y + 4} textAnchor="end" fontSize="10.5" fill="#6E625A">{fmt(t)}</text></g>;
         })}
         {data.map((d, i) => {
           const h = max ? (d.value / max) * ih : 0;
@@ -48,11 +45,11 @@ export function BarChart({ data, height = 190, color = 'url(#bar-g)', fmt = wonS
           return (
             <g key={d.label + i} onMouseEnter={() => setHi(i)} onMouseLeave={() => setHi(null)} style={{ cursor: 'default' }}>
               <rect x={padL + bw * i} y={padT} width={bw} height={ih} fill="transparent" />
-              <motion.rect x={x} width={barW} rx={Math.min(7, barW / 2)} fill={d.dim ? 'url(#bar-g2)' : d.tone ?? color}
+              <motion.rect x={x} width={barW} rx={Math.min(7, barW / 2)} fill={d.dim ? '#ECE5DB' : d.tone ?? color}
                 initial={{ y: padT + ih, height: 0 }} animate={{ y: padT + ih - h, height: h, opacity: hi == null || hi === i ? 1 : .45 }}
                 transition={{ type: 'spring', stiffness: 160, damping: 22, delay: i * .012 }} />
               {(data.length <= 16 || i % Math.ceil(data.length / 16) === 0) && (
-                <text x={x + barW / 2} y={height - 6} textAnchor="middle" fontSize="10.5" fill={hi === i ? '#4A2E1F' : '#B5A496'} fontWeight={hi === i ? 700 : 500}>{d.label}</text>
+                <text x={x + barW / 2} y={height - 6} textAnchor="middle" fontSize="10.5" fill={hi === i ? '#4A2E1F' : '#6E625A'} fontWeight={hi === i ? 600 : 400}>{d.label}</text>
               )}
             </g>
           );
@@ -78,7 +75,7 @@ export function Donut({ data, size = 168, thick = 22, center }: { data: Seg[]; s
   return (
     <div style={{ position: 'relative', width: size, height: size, flex: 'none' }}>
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#F6EDDC" strokeWidth={thick} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#F3EDE4" strokeWidth={thick} />
         {data.map((d, i) => {
           const len = (d.value / total) * C;
           const off = acc; acc += len;
@@ -89,13 +86,13 @@ export function Donut({ data, size = 168, thick = 22, center }: { data: Seg[]; s
               initial={{ strokeDasharray: `0 ${C}`, strokeDashoffset: -off }}
               animate={{ strokeDasharray: `${Math.max(len - gap, 0.1)} ${C}`, strokeDashoffset: -off }}
               transition={{ type: 'spring', stiffness: 90, damping: 20, delay: .1 + i * .06 }}
-              onMouseEnter={() => setHi(i)} onMouseLeave={() => setHi(null)} style={{ cursor: 'pointer', transition: 'stroke-width .25s' }} />
+              onMouseEnter={() => setHi(i)} onMouseLeave={() => setHi(null)} style={{ cursor: 'pointer' }} />
           );
         })}
       </svg>
       <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', textAlign: 'center', pointerEvents: 'none' }}>
         {hi != null ? (
-          <div><div style={{ fontSize: 12, color: '#A88C78', fontWeight: 700 }}>{data[hi].label}</div><div style={{ fontSize: 19, fontWeight: 800, letterSpacing: '-.03em' }}>{((data[hi].value / total) * 100).toFixed(1)}%</div><div style={{ fontSize: 11.5, color: '#A88C78' }}>{wonShort(data[hi].value)}원</div></div>
+          <div><div style={{ fontSize: 13, color: 'var(--ink-60)', fontWeight: 700 }}>{data[hi].label}</div><div style={{ fontSize: 19, fontWeight: 700, letterSpacing: '-.03em' }}>{((data[hi].value / total) * 100).toFixed(1)}%</div><div style={{ fontSize: 13, color: 'var(--ink-60)' }}>{wonShort(data[hi].value)}원</div></div>
         ) : center}
       </div>
     </div>
@@ -104,7 +101,7 @@ export function Donut({ data, size = 168, thick = 22, center }: { data: Seg[]; s
 
 export interface WStep { label: string; value: number; kind: 'start' | 'minus' | 'plus' | 'total'; }
 
-/** 현금 흐름 폭포 차트: 실결제 → −수수료 → +기타수입 → −지출 → 순수익 */
+/** 손익 폭포 차트: 매출액 → −매출원가 → −판관비 → ±영업외 → −소득세 → 당기순이익 */
 export function Waterfall({ steps, height = 230 }: { steps: WStep[]; height?: number }) {
   const [ref, w] = useWidth<HTMLDivElement>();
   const [hi, setHi] = useState<number | null>(null);
@@ -123,14 +120,10 @@ export function Waterfall({ steps, height = 230 }: { steps: WStep[]; height?: nu
   const padT = 26, padB = 30, ih = height - padT - padB;
   const y = (v: number) => padT + ((max - v) / (max - min)) * ih;
   const bw = w / bars.length, barW = Math.min(64, bw * .56);
-  const col = (k: WStep['kind'], v: number) => k === 'start' ? 'url(#wf-start)' : k === 'minus' ? '#E9B7B3' : k === 'plus' ? '#B9D2B0' : v >= 0 ? 'url(#wf-total)' : '#D97B80';
+  const col = (k: WStep['kind'], v: number) => k === 'start' ? '#8C6E58' : k === 'minus' ? '#D8C7B4' : k === 'plus' ? '#B89A80' : v >= 0 ? '#4A2E1F' : '#AE3F36';
   return (
-    <div ref={ref} style={{ position: 'relative', height }}>
+    <div ref={ref} style={{ position: 'relative', height, width: '100%', overflow: 'visible', minWidth: 0 }}>
       <svg width={w} height={height} style={{ display: 'block', overflow: 'visible' }}>
-        <defs>
-          <linearGradient id="wf-start" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#7A5A47" /><stop offset="1" stopColor="#A88C78" /></linearGradient>
-          <linearGradient id="wf-total" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#7FA37A" /><stop offset="1" stopColor="#A9C79F" /></linearGradient>
-        </defs>
         <line x1={0} x2={w} y1={y(0)} y2={y(0)} stroke="rgba(74,46,31,.12)" />
         {bars.map((b, i) => {
           const top = y(Math.max(b.from, b.to)), h = Math.max(2, Math.abs(y(b.from) - y(b.to)));
@@ -142,14 +135,14 @@ export function Waterfall({ steps, height = 230 }: { steps: WStep[]; height?: nu
                 initial={{ y: y(b.from), height: 0, opacity: 0 }} animate={{ y: top, height: h, opacity: hi == null || hi === i ? 1 : .55 }}
                 transition={{ type: 'spring', stiffness: 120, damping: 20, delay: .08 + i * .12 }} />
               {next && next.kind !== 'total' && (
-                <motion.line x1={x + barW} x2={bw * (i + 1) + (bw - barW) / 2} y1={y(b.to)} y2={y(b.to)} stroke="#C9B8A8" strokeDasharray="3 3"
+                <motion.line x1={x + barW} x2={bw * (i + 1) + (bw - barW) / 2} y1={y(b.to)} y2={y(b.to)} stroke="#CBBBAA" strokeDasharray="3 3"
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: .3 + i * .12 }} />
               )}
-              <motion.text x={x + barW / 2} y={top - 8} textAnchor="middle" fontSize="12" fontWeight="800" fill={b.kind === 'minus' ? '#B9636C' : b.kind === 'plus' ? '#4F7A4A' : '#4A2E1F'}
+              <motion.text x={x + barW / 2} y={top - 8} textAnchor="middle" fontSize="12" fontWeight="700" fill={b.kind === 'minus' ? '#6E625A' : b.kind === 'plus' ? '#2D6A45' : '#1F1611'}
                 initial={{ opacity: 0, y: top }} animate={{ opacity: 1, y: top - 8 }} transition={{ delay: .25 + i * .12 }}>
                 {b.value === 0 ? '0' : <>{b.kind === 'minus' ? '−' : b.kind === 'plus' ? '+' : ''}{wonShort(Math.abs(b.value))}</>}
               </motion.text>
-              <text x={x + barW / 2} y={height - 9} textAnchor="middle" fontSize="12" fontWeight="650" fill={hi === i ? '#4A2E1F' : '#A88C78'}>{b.label}</text>
+              <text x={x + barW / 2} y={height - 9} textAnchor="middle" fontSize="12" fontWeight="600" fill={hi === i ? '#4A2E1F' : '#6E625A'}>{b.label}</text>
             </g>
           );
         })}
@@ -180,21 +173,19 @@ export function LineChart({ labels, series, height = 200, active }: { labels: st
     return `C${cx},${y(vals[i - 1])} ${cx},${y(v)} ${x1},${y(v)}`;
   }).join(' ');
   return (
-    <div ref={ref} style={{ position: 'relative', height }} onMouseLeave={() => setHi(null)}
+    <div ref={ref} style={{ position: 'relative', height, width: '100%', overflow: 'visible', minWidth: 0 }} onMouseLeave={() => setHi(null)}
       onMouseMove={(e) => { const r = (e.currentTarget as HTMLDivElement).getBoundingClientRect(); const px = e.clientX - r.left; let best = 0, bd = 1e9; labels.forEach((_, i) => { const d = Math.abs(x(i) - px); if (d < bd) { bd = d; best = i; } }); setHi(best); }}>
       <svg width={w} height={height} style={{ display: 'block', overflow: 'visible' }}>
-        <defs>{series.map((s, i) => <linearGradient key={i} id={`lg-${i}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={s.color} stopOpacity=".28" /><stop offset="1" stopColor={s.color} stopOpacity="0" /></linearGradient>)}</defs>
-        {[0, .5, 1].map((t, i) => { const v = min + (max - min) * t; return <g key={i}><line x1={padL} x2={w - padR} y1={y(v)} y2={y(v)} stroke="rgba(74,46,31,.07)" strokeDasharray={i ? '3 4' : ''} /><text x={padL - 8} y={y(v) + 4} textAnchor="end" fontSize="10.5" fill="#B5A496">{wonShort(v)}</text></g>; })}
+        {[0, .5, 1].map((t, i) => { const v = min + (max - min) * t; return <g key={i}><line x1={padL} x2={w - padR} y1={y(v)} y2={y(v)} stroke="rgba(74,46,31,.07)" strokeDasharray={i ? '3 4' : ''} /><text x={padL - 8} y={y(v) + 4} textAnchor="end" fontSize="10.5" fill="#6E625A">{wonShort(v)}</text></g>; })}
         {min < 0 && <line x1={padL} x2={w - padR} y1={y(0)} y2={y(0)} stroke="rgba(74,46,31,.18)" />}
-        {active != null && active >= 0 && <rect x={x(active) - 18} y={padT} width={36} height={ih} rx={10} fill="rgba(217,135,143,.08)" />}
+        {active != null && active >= 0 && <rect x={x(active) - 18} y={padT} width={36} height={ih} rx={10} fill="rgba(74,46,31,.05)" />}
         {series.map((s, si) => (
           <g key={s.name}>
-            {s.fill && <motion.path d={`${path(s.values)} L${x(s.values.length - 1)},${y(Math.max(min, 0))} L${x(0)},${y(Math.max(min, 0))} Z`} fill={`url(#lg-${si})`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: .8, delay: .3 }} />}
-            <motion.path d={path(s.values)} fill="none" stroke={s.color} strokeWidth={2.6} strokeLinecap="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.1, ease: [.22, 1, .36, 1], delay: si * .15 }} />
+                        <motion.path d={path(s.values)} fill="none" stroke={s.color} strokeWidth={2.6} strokeLinecap="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.1, ease: [.22, 1, .36, 1], delay: si * .15 }} />
             {s.values.map((v, i) => <motion.circle key={i} cx={x(i)} cy={y(v)} r={hi === i ? 5.5 : 3.5} fill="#fff" stroke={s.color} strokeWidth={2.2} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: .5 + i * .05 }} />)}
           </g>
         ))}
-        {labels.map((l, i) => <text key={i} x={x(i)} y={height - 6} textAnchor="middle" fontSize="11" fontWeight={active === i || hi === i ? 750 : 500} fill={active === i || hi === i ? '#4A2E1F' : '#B5A496'}>{l}</text>)}
+        {labels.map((l, i) => <text key={i} x={x(i)} y={height - 6} textAnchor="middle" fontSize="11" fontWeight={active === i || hi === i ? 600 : 400} fill={active === i || hi === i ? '#4A2E1F' : '#6E625A'}>{l}</text>)}
       </svg>
       {hi != null && (
         <div className="chart-tip" style={{ left: x(hi), top: y(Math.max(...series.map((s) => s.values[hi] ?? 0))) }}>
@@ -206,7 +197,7 @@ export function LineChart({ labels, series, height = 200, active }: { labels: st
   );
 }
 
-export function Spark({ values, color = '#D9878F', w = 120, h = 36 }: { values: number[]; color?: string; w?: number; h?: number }) {
+export function Spark({ values, color = '#6B4A36', w = 120, h = 36 }: { values: number[]; color?: string; w?: number; h?: number }) {
   if (values.length < 2) return null;
   const max = Math.max(...values), min = Math.min(...values, 0);
   const x = (i: number) => (i / (values.length - 1)) * (w - 6) + 3;
