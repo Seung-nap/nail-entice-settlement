@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "nail-entice", "runtimeExecutable": "npx", "runtimeArgs": ["vite", "--port", "5188"], "port": 5188 }
+  ]
+}

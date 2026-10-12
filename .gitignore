@@ -1,0 +1,6 @@
+node_modules/
+dist/
+release/
+# 고객 개인정보가 담긴 매출 엑셀은 커밋하지 않는다
+data-sample/
+*.xlsx
