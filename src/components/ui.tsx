@@ -14,10 +14,12 @@ export function CountUp({ value, format = (n: number) => Math.round(n).toLocaleS
   const reduce = useReducedMotion();
   useEffect(() => {
     const el = ref.current; if (!el) return;
-    if (reduce) { el.textContent = format(value); prev.current = value; return; }
+    if (reduce || document.visibilityState !== 'visible') { el.textContent = format(value); prev.current = value; return; }
     const c = animate(prev.current, value, { duration, ease: [.22, 1, .36, 1], onUpdate: (v) => { el.textContent = format(v); } });
     prev.current = value;
-    return () => c.stop();
+    // 창이 가려져 프레임이 멈춰도 숫자는 반드시 실제 값으로 끝나게
+    const t = window.setTimeout(() => { c.stop(); el.textContent = format(value); }, duration * 1000 + 300);
+    return () => { c.stop(); window.clearTimeout(t); };
   }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
   return <span ref={ref} className="num">{format(value)}</span>;
 }
