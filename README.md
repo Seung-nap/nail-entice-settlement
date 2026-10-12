@@ -5,8 +5,20 @@ Electron + React + HyperFormula(수식 엔진) + ExcelJS(엑셀 입출력). 사�
 ```bash
 npm run dev          # 브라우저 개발 서버 (http://localhost:5188/?demo 로 열면 data-sample 자동 로드)
 npm start            # 빌드 후 데스크톱 앱 실행
-npm run dist         # Windows 설치본·포터블 exe → release/
+npm run dist         # Windows 설치본·포터블 exe → release/ (배포 안 함)
 ```
+
+## 새 버전 배포 → 매장 PC 자동 업데이트
+1. `package.json` 의 `"version"` 을 올린다 (예: 1.3.2 → 1.3.3)
+2. 커밋 · `git push`
+3. 배포: `GH_TOKEN=$(gh auth token) npm run release`
+   → GitHub Releases(Seung-nap/nail-entice-settlement)에 설치본 + `latest.yml` 업로드
+4. 설치된 앱이 시작할 때·3시간마다 확인 → 뒤에서 내려받고 사이드바에 **다시 시작해서 업데이트** 표시
+   (그냥 앱을 닫아도 닫힐 때 설치된다)
+
+데이터는 `%APPDATA%/Nail Entice 정산/data` 에 있고 설치·업데이트·제거가 건드리지 않는다.
+업데이트 직전·직후·매일 `backups/` 에 자동 백업(최근 40개). **`electron/main.cjs` 의 데이터 경로와
+`productName` 은 바꾸지 말 것** — 바꾸면 기존 데이터가 사라진 것처럼 보인다.
 
 ## 구조
 - `src/lib/data.ts` POS 엑셀 파싱 · 방문 묶기 · 기간 교체 병합
