@@ -32,6 +32,7 @@ declare global {
 export interface UpdateState { state: 'idle' | 'checking' | 'latest' | 'downloading' | 'ready' | 'error'; version?: string; percent?: number; message?: string; }
 
 const LS_KEY = 'nail-entice-data-v1';
+let migratedOnLoad = false;   // 예전 형식을 새 형식으로 바꿨으면 시작하자마자 한 번 저장한다
 
 async function loadData(): Promise<AppData> {
   try {
@@ -43,6 +44,7 @@ async function loadData(): Promise<AppData> {
       if ((d.version ?? 1) < 2 || !Array.isArray(d.fixed)) {
         if (window.api) await window.api.backup(raw, 'before-migrate-v2');
         migrateToV2(d);
+        migratedOnLoad = true;
       }
       return { ...base, ...d, settings: { ...DEFAULT_SETTINGS, ...d.settings, payLabels: { ...DEFAULT_SETTINGS.payLabels, ...d.settings?.payLabels }, payRates: { ...DEFAULT_SETTINGS.payRates, ...d.settings?.payRates } } };
     }
@@ -179,6 +181,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         } catch (e) { console.warn(e); }
       }
       dataRef.current = d; setData(d);
+      if (migratedOnLoad) { saveData(d); flushSave(); }   // 변환본을 바로 디스크에 — 다음 실행부터는 변환·백업을 반복하지 않는다
       await fullRebuild(d, '정산 준비 중');
       const b = builtRef.current!;
       const now = new Date(); const cur = now.getFullYear() * 100 + now.getMonth() + 1;
