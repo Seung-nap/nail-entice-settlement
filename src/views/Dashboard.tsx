@@ -6,6 +6,7 @@ import { BarChart, Donut, Waterfall, LineChart, BarList } from '../components/Ch
 import { useMonthVisits, useVisitRows, prevMonthOf, PAY_KEYS, DONUT_COLORS, daysIn, WD } from './common';
 import { monthShort, wonShort, pct, toSerial, serialToParts, monthKeyOf } from '../lib/data';
 import { EXPENSE_GROUPS } from '../lib/model';
+import { allEntries } from '../lib/fixed';
 
 export default function Dashboard({ go }: { go: (p: string) => void }) {
   const { sv, month, months, data } = useApp();
@@ -21,13 +22,13 @@ export default function Dashboard({ go }: { go: (p: string) => void }) {
     if (!partial || !prev) return null;
     const pv = all.filter((v) => v.month === prev && v.day <= cutoff);
     const paid = pv.reduce((a, v) => a + v.paid, 0), fee = pv.reduce((a, v) => a + v.fee, 0), unpaid = pv.reduce((a, v) => a + v.pay.unpaid, 0);
-    const es = data.entries.filter((e) => monthKeyOf(e.date) === prev && Number(e.date.slice(8, 10)) <= cutoff);
+    const es = allEntries(data).filter((e) => monthKeyOf(e.date) === prev && Number(e.date.slice(8, 10)) <= cutoff);
     const exp = es.filter((e) => e.kind === '지출').reduce((a, e) => a + e.amount, 0), inc = es.filter((e) => e.kind === '수입').reduce((a, e) => a + e.amount, 0);
     return { paid, visits: pv.length, avg: pv.length ? paid / pv.length : 0, profit: paid - fee - unpaid + inc - exp } as Record<string, number>;
-  }, [partial, prev, cutoff, all, data.entries]);
+  }, [partial, prev, cutoff, all, data]);
   const P = (k: string) => (!prev ? null : same ? same[k] ?? null : sv(k, prev));
   const vsLabel = same ? '전월 동기 대비' : '전월 대비';
-  const prevHasExp = prev != null && data.entries.some((e) => e.kind === '지출' && monthKeyOf(e.date) === prev && (!same || Number(e.date.slice(8, 10)) <= cutoff));
+  const prevHasExp = prev != null && allEntries(data).some((e) => e.kind === '지출' && monthKeyOf(e.date) === prev && (!same || Number(e.date.slice(8, 10)) <= cutoff));
   const skipProfitDelta = month !== 'all' && sv('expense') === 0 && prevHasExp;
   const label = month === 'all' ? '전체 기간' : `${Math.floor(month / 100)}년 ${month % 100}월${partial ? ` (${cutoff}일까지)` : ''}`;
   const recent = useMemo(() => [...visits].sort((a, b) => b.dt - a.dt).slice(0, 6), [visits]);

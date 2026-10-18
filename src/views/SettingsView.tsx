@@ -5,6 +5,7 @@ import { Modal, Stagger } from '../components/ui';
 import { RateInput } from './Payments';
 import { PAY_KEYS, AppData, emptyData, EXPENSE_GROUPS, INCOME_GROUPS } from '../lib/model';
 import { pct } from '../lib/data';
+import { migrateToV2 } from '../lib/fixed';
 import { PAY_META } from './common';
 import { UpdatePanel } from '../components/Update';
 
@@ -24,7 +25,7 @@ export default function SettingsView({ onUpload }: { onUpload: () => void }) {
     try {
       const d = JSON.parse(await f.text()) as AppData;
       if (!Array.isArray(d.lines) || !Array.isArray(d.entries)) throw new Error('정산 백업 파일이 아니에요');
-      update((x) => { Object.assign(x, emptyData(), d); }, '백업에서 복원했어요');
+      migrateToV2(d); update((x) => { Object.assign(x, emptyData(), d); }, '백업에서 복원했어요');
     } catch (e: any) { toast(`복원 실패: ${e.message}`, 'err'); }
   };
 

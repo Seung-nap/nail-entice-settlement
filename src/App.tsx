@@ -38,7 +38,7 @@ function Shell() {
   const fileRef = useRef<HTMLInputElement>(null);
   const dragDepth = useRef(0);
   const nav = NAV.find((n) => n.id === page)!;
-  const hasData = data.lines.length > 0 || data.entries.length > 0;
+  const hasData = data.lines.length > 0 || data.entries.length > 0 || data.fixed.length > 0;
 
   const handleFile = useCallback(async (f: File | undefined) => {
     if (!f) return;
@@ -99,6 +99,7 @@ function Shell() {
               <div className="row"><span>기간</span><b className="num">{built.months.length ? `${String(built.months[0]).slice(2, 4)}.${String(built.months[0] % 100).padStart(2, '0')} – ${String(built.months[built.months.length - 1] % 100).padStart(2, '0')}월` : '-'}</b></div>
               <div className="row"><span>방문</span><b className="num">{built.visits.length.toLocaleString()}건</b></div>
               <div className="row"><span>지출 기록</span><b className="num">{data.entries.length}건</b></div>
+              <div className="row"><span>고정비</span><b className="num">{data.fixed.length}개</b></div>
             </div>
           )}
           <button className="btn primary side-btn" onClick={() => fileRef.current?.click()}><Icon name="upload" size={16} />매출 엑셀 올리기</button>

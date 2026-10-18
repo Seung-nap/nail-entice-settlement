@@ -2,6 +2,7 @@
 // 모든 집계 셀은 '수식'이다. 원본 값은 매출원장·수입지출·설정 시트에만 있다.
 import { AppData, PAY_KEYS, PayKey, EXPENSE_GROUPS, INCOME_GROUPS, UNASSIGNED, Visit } from './model';
 import { buildVisits, customerKey, dateToSerial, monthKeyOf, toSerial } from './data';
+import { allEntries } from './fixed';
 
 export type Fmt = 'won' | 'int' | 'pct' | 'dt' | 'date' | 'month' | 'text' | 'num' | 'vid' | 'cid' | 'sid';
 export type Sty = 'title' | 'sub' | 'head' | 'section' | 'total' | 'key' | 'input' | 'muted' | 'strong' | 'net';
@@ -58,7 +59,8 @@ export function buildWorkbook(data: AppData): Built {
 
   // 월 범위: 매출·지출 최소~최대를 빈 달 없이
   const ms = new Set<number>(visits.map((v) => v.month));
-  data.entries.forEach((e) => ms.add(monthKeyOf(e.date)));
+  const everyEntry = allEntries(data);
+  everyEntry.forEach((e) => ms.add(monthKeyOf(e.date)));
   let months = [...ms].sort((a, b) => a - b);
   if (months.length) {
     const out: number[] = []; let y = Math.floor(months[0] / 100), m = months[0] % 100;
@@ -127,14 +129,14 @@ export function buildWorkbook(data: AppData): Built {
   });
 
   // ───────── 수입지출 ─────────
-  const E_COLS = ['날짜', '구분', '대분류', '항목', '내용', '금액', '결제수단', '매월고정', '메모'];
-  const entries = [...data.entries].sort((a, b) => a.date.localeCompare(b.date));
+  const E_COLS = ['날짜', '구분', '대분류', '항목', '내용', '금액', '결제수단', '고정/변동', '메모'];
+  const entries = [...everyEntry].sort((a, b) => a.date.localeCompare(b.date) || Number(!!b.fixedId) - Number(!!a.fixedId));
   const eRows: Cell[][] = [E_COLS.map(head)];
   entries.forEach((e) => {
     eRows.push([
       { v: dateToSerial(e.date), f: 'date', e: true }, { v: e.kind, f: 'text', e: true }, { v: e.group, f: 'text', e: true }, { v: e.item, f: 'text', e: true },
       { v: e.title, f: 'text', e: true }, { v: e.amount, f: 'won', e: true, s: 'strong' }, { v: e.method, f: 'text', e: true },
-      { v: e.recurring ? 'Y' : '', f: 'text', e: true }, { v: e.memo, f: 'text', e: true },
+      { v: e.kind === '수입' ? '' : e.fixedId ? '고정' : '변동', f: 'text', e: true, s: e.fixedId ? 'muted' : undefined }, { v: e.memo, f: 'text', e: true },
     ]);
   });
   for (let i = 0; i < 30; i++) eRows.push(E_COLS.map((_, c) => ({ v: null, f: c === 0 ? 'date' : c === 5 ? 'won' : 'text', e: true })));
@@ -258,7 +260,9 @@ export function buildWorkbook(data: AppData): Built {
   const rFee = add('fee', '결제 수수료 합계', vSum(V.fee));
   add('netSales', '시술 입금액 (실결제−수수료−미수)', (c) => `=${A(c, rPaid)}-${A(c, rFee)}-${A(c, payRows.unpaid)}`, { s: 'strong' });
   const rInc = add('otherIncome', '기타 수입 합계 (상품 매출 + 영업외수익)', (c) => `=${A(c, rOtherSales)}+${A(c, rNonopInc)}`);
-  const rExp = add('expense', '지출 합계 (기입한 모든 지출)', (c) => `=SUMIFS(${ER(5)},${ER(1)},"지출",${ER(0)},${dFrom(c)},${ER(0)},${dTo(c)})`);
+  const rExp = add('expense', '지출 합계 (고정비 + 변동비)', (c) => `=SUMIFS(${ER(5)},${ER(1)},"지출",${ER(0)},${dFrom(c)},${ER(0)},${dTo(c)})`);
+  add('fixedCost', '　그중 고정비 (매월 자동)', (c) => `=${ex(c, `${ER(7)},"고정"`)}`);
+  add('variableCost', '　그중 변동비', (c) => `=${A(c, rExp)}-${A(c, rExp + 1)}`);
   add('feeRate', '매출 대비 수수료율', (c) => `=IFERROR(${A(c, rFee)}/${A(c, rPaid)},0)`, { f: 'pct', total: () => `=IFERROR(${A(totC, rFee)}/${A(totC, rPaid)},0)` });
   add('expRate', '매출 대비 지출률', (c) => `=IFERROR(${A(c, rExp)}/${A(c, rRevenue)},0)`, { f: 'pct', total: () => `=IFERROR(${A(totC, rExp)}/${A(totC, rRevenue)},0)` });
   void rInc;

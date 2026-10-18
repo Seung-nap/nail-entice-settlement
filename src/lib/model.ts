@@ -49,7 +49,24 @@ export interface Entry {
   title: string;        // 내용
   amount: number;
   method: string;       // 카드 / 현금 / 계좌이체 ...
-  recurring: boolean;   // 매월 고정
+  recurring: boolean;   // true = 고정비가 펼친 행 (직접 기입한 변동비는 false)
+  memo: string;
+  fixedId?: string;     // 고정비 규칙에서 펼쳐진 행이면 그 규칙 id (저장되지 않는다)
+}
+
+/** 고정비 규칙 — 한 번 등록하면 시작 달부터 매달 자동으로 지출에 들어간다 */
+export interface FixedCost {
+  id: string;
+  group: string;
+  item: string;
+  title: string;
+  method: string;
+  day: number;                                  // 매월 납부일 (말일보다 크면 말일)
+  from: number;                                 // 시작 달 YYYYMM
+  to: number | null;                            // 마지막 달 (null = 계속)
+  amounts: { from: number; amount: number }[];  // 금액 이력 — 해당 달부터 적용
+  skip: number[];                               // 제외한 달
+  overrides: Record<string, number>;            // 그 달만 다른 금액
   memo: string;
 }
 
@@ -63,12 +80,13 @@ export interface Settings {
 }
 
 export interface AppData {
-  version: 1;
+  version: 1 | 2;
   importedAt: string | null;
   sourceName: string | null;
   lines: SaleLine[];
   cardAssign: Record<string, string>;   // visitKey → 카드사
-  entries: Entry[];
+  entries: Entry[];               // 직접 기입한 변동비·수입
+  fixed: FixedCost[];             // 고정비 규칙
   settings: Settings;
   freeSheet: Record<string, string>;    // 'r,c' → raw 입력
 }
@@ -126,7 +144,7 @@ export const ENTRY_METHODS = ['카드', '현금', '계좌이체', '자동이체'
 
 export function emptyData(): AppData {
   return {
-    version: 1, importedAt: null, sourceName: null, lines: [], cardAssign: {}, entries: [],
+    version: 2, importedAt: null, sourceName: null, lines: [], cardAssign: {}, entries: [], fixed: [],
     settings: structuredClone(DEFAULT_SETTINGS), freeSheet: {},
   };
 }

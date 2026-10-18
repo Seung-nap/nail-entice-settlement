@@ -5,6 +5,7 @@ import { buildWorkbook, Built, SH, SETTINGS_LAYOUT } from './lib/workbook';
 import { Engine, rawOf, normalize } from './lib/engine';
 import { mergeLines, parseSalesWorkbook, ParseResult, dateToSerial, serialToIso, monthKeyOf } from './lib/data';
 import { exportWorkbook } from './lib/exporter';
+import { migrateToV2, parseFixedKey, newFixed, baseAmount, ymOf } from './lib/fixed';
 
 declare global {
   interface Window {
@@ -38,6 +39,11 @@ async function loadData(): Promise<AppData> {
     if (raw) {
       const d = JSON.parse(raw) as AppData;
       const base = emptyData();
+      // 예전 버전 데이터 → 새 형식(고정비 규칙). 바꾸기 전 원본을 백업해 둔다.
+      if ((d.version ?? 1) < 2 || !Array.isArray(d.fixed)) {
+        if (window.api) await window.api.backup(raw, 'before-migrate-v2');
+        migrateToV2(d);
+      }
       return { ...base, ...d, settings: { ...DEFAULT_SETTINGS, ...d.settings, payLabels: { ...DEFAULT_SETTINGS.payLabels, ...d.settings?.payLabels }, payRates: { ...DEFAULT_SETTINGS.payRates, ...d.settings?.payRates } } };
     }
   } catch (e) { console.warn('load failed', e); }
@@ -277,11 +283,41 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const id = bind.ids[r - bind.startRow];
       const fields = ['date', 'kind', 'group', 'item', 'title', 'amount', 'method', 'recurring', 'memo'] as const;
       const field = fields[c]; if (!field) return null;
+      // 고정비가 펼친 행: 금액은 '그 달만', 나머지는 규칙 자체를 고친다
+      if (id?.startsWith('fx:')) {
+        const { id: fid, month: fm } = parseFixedKey(id);
+        if (field === 'amount') {
+          const n = parseMoney(t); if (isNaN(n)) return '금액은 숫자로 입력해주세요';
+          update((d) => {
+            const fc = d.fixed.find((x) => x.id === fid); if (!fc) return;
+            if (n === 0) { if (!fc.skip.includes(fm)) fc.skip.push(fm); delete fc.overrides[String(fm)]; }
+            else if (n === baseAmount(fc, fm)) delete fc.overrides[String(fm)];
+            else fc.overrides[String(fm)] = n;
+          }, n === 0 ? '이번 달만 이 고정비를 뺐어요' : '이번 달 고정비 금액을 바꿨어요');
+          return null;
+        }
+        if (field === 'group' || field === 'item' || field === 'title' || field === 'method' || field === 'memo') {
+          update((d) => { const fc = d.fixed.find((x) => x.id === fid); if (fc) (fc as any)[field] = t; }, '고정비 정보를 바꿨어요 (모든 달에 적용)');
+          return null;
+        }
+        return '고정비 행이에요 — 날짜·구분은 지출 기입 화면의 고정비 목록에서 바꿔주세요';
+      }
       let value: unknown = t;
       if (field === 'date') { const d = parseDate(t); if (!d) return '날짜는 2026-10-12 처럼 입력해주세요'; value = d; }
       if (field === 'amount') { const n = parseMoney(t); if (isNaN(n)) return '금액은 숫자로 입력해주세요'; value = n; }
       if (field === 'kind') { if (!['지출', '수입'].includes(t)) return '구분은 "지출" 또는 "수입"'; }
-      if (field === 'recurring') value = /^(y|yes|o|1|true|예|고정|✓)$/i.test(t);
+      if (field === 'recurring') {
+        // 변동비 행에 '고정'을 적으면 그 달부터 매달 자동으로 들어가는 고정비로 바꾼다
+        if (!/^(고정|y|yes|o|1|true|예|✓)$/i.test(t)) return null;
+        const src = dataRef.current.entries.find((x) => x.id === id);
+        if (!src) return null;
+        if (src.kind !== '지출') return '고정비는 지출만 가능해요';
+        update((d) => {
+          d.entries = d.entries.filter((x) => x.id !== id);
+          d.fixed.push(newFixed({ group: src.group, item: src.item, title: src.title, method: src.method, day: Number(src.date.slice(8, 10)), from: ymOf(src.date), memo: src.memo, amount: src.amount }));
+        }, `${src.item}을(를) 고정비로 바꿨어요 — 매달 자동으로 들어가요`);
+        return null;
+      }
       if (id) {
         update((d) => {
           const e = d.entries.find((x) => x.id === id); if (!e) return;

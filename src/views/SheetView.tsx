@@ -7,6 +7,7 @@ import { spring } from '../components/ui';
 import { colL, Fmt, SH } from '../lib/workbook';
 import type { Val } from '../lib/engine';
 import { serialToParts, pad } from '../lib/data';
+import { parseFixedKey } from '../lib/fixed';
 
 const RH = 28, HH = 26, RW = 46;
 
@@ -229,7 +230,7 @@ export default function SheetView() {
           placeholder={canEdit ? '값이나 =수식 을 입력하세요' : ''} />
         <span className={`ss-lock ${canEdit ? 'edit' : ''}`}><Icon name={canEdit ? 'pencil' : 'lock'} size={13} />{canEdit ? '입력 가능' : '자동 계산'}</span>
         {entryRowSel && (
-          <button className="btn sm ghost" onClick={() => { const ids = def.bind.type === 'entries' ? def.bind.ids.slice(range.r1 - 1, range.r2) : []; update((d) => { d.entries = d.entries.filter((x) => !ids.includes(x.id)); }, `${ids.length}줄을 삭제했어요`); }}><Icon name="trash" size={14} />선택 줄 삭제</button>
+          <button className="btn sm ghost" onClick={() => { const ids = def.bind.type === 'entries' ? def.bind.ids.slice(range.r1 - 1, range.r2) : []; update((d) => { d.entries = d.entries.filter((x) => !ids.includes(x.id)); for (const id of ids) if (id.startsWith('fx:')) { const { id: fid, month: fm } = parseFixedKey(id); const fc = d.fixed.find((x) => x.id === fid); if (fc && !fc.skip.includes(fm)) fc.skip.push(fm); } }, `${ids.length}줄을 삭제했어요 (고정비는 그 달만 제외)`); }}><Icon name="trash" size={14} />선택 줄 삭제</button>
         )}
         <button className="btn sm primary" onClick={exportXlsx}><Icon name="download" size={14} />엑셀로 내보내기</button>
       </div>

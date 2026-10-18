@@ -4,6 +4,7 @@ import { emptyData, uid } from '../src/lib/model';
 import { buildWorkbook, SH } from '../src/lib/workbook';
 import { Engine } from '../src/lib/engine';
 import { exportWorkbook } from '../src/lib/exporter';
+import { newFixed, expandFixed, migrateToV2 } from '../src/lib/fixed';
 
 const [,, input, out, dataOut] = process.argv;
 const buf = fs.readFileSync(input);
@@ -11,7 +12,10 @@ const t0 = performance.now();
 const pr = await parseSalesWorkbook(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
 const data = emptyData();
 data.lines = mergeLines([], pr).merged;
-data.entries.push({ id: uid(), date: '2026-09-01', kind: '지출', group: '임대·관리', item: '월세', title: '9월 월세', amount: 800000, method: '자동이체', recurring: true, memo: '' });
+// 고정비: 9월부터 매달 월세 80만 — 10월엔 그 달만 85만
+const rent = newFixed({ group: '임대·관리', item: '월세', title: '상가 월세', method: '자동이체', day: 1, from: 202609, memo: '', amount: 800000 });
+rent.overrides['202610'] = 850000;
+data.fixed.push(rent);
 data.entries.push({ id: uid(), date: '2026-09-15', kind: '수입', group: '기타 수입', item: '제품 판매', title: '큐티클오일', amount: 30000, method: '카드', recurring: false, memo: '' });
 const E = (date: string, kind: '지출' | '수입', group: string, item: string, amount: number) => data.entries.push({ id: uid(), date, kind, group, item, title: '', amount, method: '카드', recurring: false, memo: '' });
 E('2026-09-05', '지출', '재료비', '젤·컬러', 100000);
@@ -80,4 +84,20 @@ chk('nonopExp', S9('nonopExp'), 50000);
 chk('preTax', S9('preTax'), 1910924);
 chk('incomeTax', S9('incomeTax'), 200000);
 chk('net profit', S9('profit'), 1710924);
+const S10 = (k: string) => eng.value(SH.M, sr[k], built.summaryCol(202610));
+chk('fixed sep', S9('fixedCost'), 800000);
+chk('variable sep', S9('variableCost'), 350000);
+chk('fixed oct auto (override)', S10('fixedCost'), 850000);
+chk('oct expense = fixed only', S10('expense'), 850000);
+// 예전(v1) 데이터 변환: 7월 50만 · (8월 없음) · 9월 55만 '매월 고정' → 규칙 1개, 과거 합계 그대로
+const old: any = { ...emptyData(), version: 1, fixed: undefined, entries: [
+  { id: 'a', date: '2026-07-01', kind: '지출', group: '임대·관리', item: '월세', title: '', amount: 500000, method: '자동이체', recurring: true, memo: '' },
+  { id: 'b', date: '2026-09-01', kind: '지출', group: '임대·관리', item: '월세', title: '', amount: 550000, method: '자동이체', recurring: true, memo: '' },
+  { id: 'c', date: '2026-09-03', kind: '지출', group: '재료비', item: '젤·컬러', title: '', amount: 70000, method: '카드', recurring: false, memo: '' },
+] };
+migrateToV2(old);
+const ex = expandFixed(old, 202610).map((e) => `${e.date.slice(0, 7)}:${e.amount}`).join(',');
+chk('migrate rules', old.fixed.length, 1);
+chk('migrate keeps variable', old.entries.length, 1);
+chk('migrate months', ex, '2026-07:500000,2026-09:550000,2026-10:550000');
 chk('identity', S9('profit'), (S9('paid') as number) - (S9('fee') as number) + (S9('otherIncome') as number) - (S9('expense') as number));
